@@ -29,21 +29,28 @@ import com.example.spotrapp.viewmodel.ItemViewModel
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    var activeTutorialStep by remember { mutableStateOf<String?>(Routes.DASHBOARD) }
+
+    // Tutorial is deliberately disabled after a Skip.
+    // It is enabled only when the user explicitly chooses Start Tutorial.
+    var activeTutorialStep by remember { mutableStateOf<String?>(null) }
 
     NavHost(
         navController = navController,
         startDestination = Routes.ONBOARDING,
         modifier = modifier
     ) {
-
         composable(Routes.ONBOARDING) {
             OnboardingScreen(
                 onBoardingFinished = {
+                    activeTutorialStep = null
                     navController.navigate(Routes.DASHBOARD) {
-                        popUpTo(Routes.ONBOARDING) {
-                            inclusive = true
-                        }
+                        popUpTo(Routes.ONBOARDING) { inclusive = true }
+                    }
+                },
+                onStartTutorial = {
+                    activeTutorialStep = Routes.DASHBOARD
+                    navController.navigate(Routes.DASHBOARD) {
+                        popUpTo(Routes.ONBOARDING) { inclusive = true }
                     }
                 }
             )
@@ -52,76 +59,38 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(Routes.DASHBOARD) {
             DashboardScreen(
                 onItemClick = { item ->
-                    navController.navigate(
-                        Routes.itemDetails(item.id)
-                    )
+                    navController.navigate(Routes.itemDetails(item.id))
                 },
-
                 showTutorial = activeTutorialStep == Routes.DASHBOARD,
-
                 onShowTutorial = {
                     activeTutorialStep = Routes.DASHBOARD
                 },
-
                 onDismissTutorial = {
-                    activeTutorialStep =
-                        Routes.nextTutorialStep(Routes.DASHBOARD)
+                    activeTutorialStep = Routes.nextTutorialStep(Routes.DASHBOARD)
                 },
-
-                onSearchClick = {
-                    navController.navigate(Routes.SEARCH)
-                },
-
-                onHistoryClick = {
-                    navController.navigate(Routes.HISTORY)
-                },
-
-                onScanClick = {
-                    navController.navigate(Routes.PUTAWAY)
-                }
+                onSearchClick = { navController.navigate(Routes.SEARCH) },
+                onHistoryClick = { navController.navigate(Routes.HISTORY) },
+                onScanClick = { navController.navigate(Routes.PUTAWAY) }
             )
         }
 
         composable(Routes.SEARCH) { backStackEntry ->
-
-            // VoiceSearchScreen writes here via the previous entry's savedStateHandle before popping back.
             val voiceQuery = backStackEntry.savedStateHandle
-                .getStateFlow<String?>(
-                    "voiceQuery",
-                    null
-                )
+                .getStateFlow<String?>("voiceQuery", null)
                 .collectAsStateWithLifecycle()
 
             SearchScreen(
                 onHomeClick = {
                     navController.navigate(Routes.DASHBOARD) {
-                        popUpTo(Routes.DASHBOARD) {
-                            inclusive = false
-                        }
+                        popUpTo(Routes.DASHBOARD) { inclusive = false }
                         launchSingleTop = true
                     }
                 },
-
-                onScanClick = {
-                    navController.navigate(Routes.PUTAWAY)
-                },
-
-                onHistoryClick = {
-                    navController.navigate(Routes.HISTORY)
-                },
-
-                onVoiceSearchClick = {
-                    navController.navigate(Routes.VOICE_SEARCH)
-                },
-
-                onItemClick = { item ->
-                    navController.navigate(
-                        Routes.itemDetails(item.id)
-                    )
-                },
-
+                onScanClick = { navController.navigate(Routes.PUTAWAY) },
+                onHistoryClick = { navController.navigate(Routes.HISTORY) },
+                onVoiceSearchClick = { navController.navigate(Routes.VOICE_SEARCH) },
+                onItemClick = { item -> navController.navigate(Routes.itemDetails(item.id)) },
                 incomingVoiceQuery = voiceQuery.value,
-
                 onVoiceQueryConsumed = {
                     backStackEntry.savedStateHandle["voiceQuery"] = null
                 }
@@ -130,19 +99,12 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
         composable(Routes.VOICE_SEARCH) {
             VoiceSearchScreen(
-                onBackClick = {
-                    navController.popBackStack()
-                },
-
+                onBackClick = { navController.popBackStack() },
                 onResult = { recognizedText ->
-
-                    navController.previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set(
-                            "voiceQuery",
-                            recognizedText
-                        )
-
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "voiceQuery",
+                        recognizedText
+                    )
                     navController.popBackStack()
                 }
             )
@@ -152,49 +114,24 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             HistoryScreen(
                 onHomeClick = {
                     navController.navigate(Routes.DASHBOARD) {
-                        popUpTo(Routes.DASHBOARD) {
-                            inclusive = false
-                        }
+                        popUpTo(Routes.DASHBOARD) { inclusive = false }
                         launchSingleTop = true
                     }
                 },
-
-                onScanClick = {
-                    navController.navigate(Routes.PUTAWAY)
-                },
-
-                // HistoryEntity only stores an itemId, not a full item
-                onItemClick = { itemId ->
-                    navController.navigate(
-                        Routes.itemDetails(itemId)
-                    )
-                }
+                onScanClick = { navController.navigate(Routes.PUTAWAY) },
+                onItemClick = { itemId -> navController.navigate(Routes.itemDetails(itemId)) }
             )
         }
 
         composable(Routes.PUTAWAY) {
             CameraScanScreen(
-                onBackClick = {
-                    navController.popBackStack()
-                },
-
+                onBackClick = { navController.popBackStack() },
                 onPhotoCaptured = { photoPath ->
-
-                    // Encode the file path before putting it into navigation
-                    val encodedPhotoPath =
-                        Uri.encode(photoPath)
-
-                    navController.navigate(
-                        Routes.addItem(encodedPhotoPath)
-                    )
+                    navController.navigate(Routes.addItem(Uri.encode(photoPath)))
                 },
-
-                showTutorial =
-                    activeTutorialStep == Routes.PUTAWAY,
-
+                showTutorial = activeTutorialStep == Routes.PUTAWAY,
                 onDismissTutorial = {
-                    activeTutorialStep =
-                        Routes.nextTutorialStep(Routes.PUTAWAY)
+                    activeTutorialStep = Routes.nextTutorialStep(Routes.PUTAWAY)
                 }
             )
         }
@@ -209,93 +146,50 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 }
             )
         ) { backStackEntry ->
-
-            val encodedPhotoPath =
-                backStackEntry.arguments
-                    ?.getString("photoPath")
-
-            // Decode the path again before giving it to AddItemScreen.
-            val photoPath =
-                encodedPhotoPath?.let { Uri.decode(it) }
+            val encodedPhotoPath = backStackEntry.arguments?.getString("photoPath")
+            val photoPath = encodedPhotoPath?.let { Uri.decode(it) }
 
             AddItemScreen(
-                onBack = {
-                    navController.popBackStack()
-                },
-
+                onBack = { navController.popBackStack() },
                 onSaved = {
                     navController.navigate(Routes.DASHBOARD) {
-                        popUpTo(Routes.DASHBOARD) {
-                            inclusive = false
-                        }
+                        popUpTo(Routes.DASHBOARD) { inclusive = false }
                         launchSingleTop = true
                     }
                 },
-
-                showTutorial =
-                    activeTutorialStep == Routes.ADD_ITEM,
-
+                showTutorial = activeTutorialStep == Routes.ADD_ITEM,
                 onDismissTutorial = {
-                    activeTutorialStep =
-                        Routes.nextTutorialStep(Routes.ADD_ITEM)
+                    activeTutorialStep = Routes.nextTutorialStep(Routes.ADD_ITEM)
                 },
-
                 photoPath = photoPath
             )
         }
 
         composable(
             route = Routes.ITEM_DETAILS,
-            arguments = listOf(
-                navArgument("itemId") {
-                    type = NavType.IntType
-                }
-            )
+            arguments = listOf(navArgument("itemId") { type = NavType.IntType })
         ) { backStackEntry ->
-
-            val itemId =
-                backStackEntry.arguments
-                    ?.getInt("itemId")
-                    ?: -1
-
+            val itemId = backStackEntry.arguments?.getInt("itemId") ?: -1
             val itemViewModel: ItemViewModel = hiltViewModel()
-
-            val itemState by itemViewModel.itemState
-                .collectAsStateWithLifecycle()
-
-            val item =
-                (itemState as? Resource.Success)
-                    ?.data
-                    ?.find { it.id == itemId }
+            val itemState by itemViewModel.itemState.collectAsStateWithLifecycle()
+            val item = (itemState as? Resource.Success)?.data?.find { it.id == itemId }
 
             if (item != null) {
                 ItemDetailsScreen(
                     item = item,
-
-                    onBack = {
-                        navController.popBackStack()
-                    },
-
+                    onBack = { navController.popBackStack() },
                     onEditClick = { selectedItem ->
-                        navController.navigate(
-                            Routes.editItem(selectedItem.id)
-                        )
+                        navController.navigate(Routes.editItem(selectedItem.id))
                     },
-
                     onRetrieved = {
                         navController.navigate(Routes.DASHBOARD) {
-                            popUpTo(Routes.DASHBOARD) {
-                                inclusive = false
-                            }
+                            popUpTo(Routes.DASHBOARD) { inclusive = false }
                             launchSingleTop = true
                         }
                     },
-
                     onDeleted = {
                         navController.navigate(Routes.DASHBOARD) {
-                            popUpTo(Routes.DASHBOARD) {
-                                inclusive = false
-                            }
+                            popUpTo(Routes.DASHBOARD) { inclusive = false }
                             launchSingleTop = true
                         }
                     }
@@ -305,41 +199,20 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
         composable(
             route = Routes.EDIT_ITEM,
-            arguments = listOf(
-                navArgument("itemId") {
-                    type = NavType.IntType
-                }
-            )
+            arguments = listOf(navArgument("itemId") { type = NavType.IntType })
         ) { backStackEntry ->
-
-            val itemId =
-                backStackEntry.arguments
-                    ?.getInt("itemId")
-                    ?: -1
-
+            val itemId = backStackEntry.arguments?.getInt("itemId") ?: -1
             val itemViewModel: ItemViewModel = hiltViewModel()
-
-            val itemState by itemViewModel.itemState
-                .collectAsStateWithLifecycle()
-
-            val item =
-                (itemState as? Resource.Success)
-                    ?.data
-                    ?.find { it.id == itemId }
+            val itemState by itemViewModel.itemState.collectAsStateWithLifecycle()
+            val item = (itemState as? Resource.Success)?.data?.find { it.id == itemId }
 
             if (item != null) {
                 EditItemScreen(
                     item = item,
-
-                    onBack = {
-                        navController.popBackStack()
-                    },
-
+                    onBack = { navController.popBackStack() },
                     onSaved = {
                         navController.navigate(Routes.DASHBOARD) {
-                            popUpTo(Routes.DASHBOARD) {
-                                inclusive = false
-                            }
+                            popUpTo(Routes.DASHBOARD) { inclusive = false }
                             launchSingleTop = true
                         }
                     }
