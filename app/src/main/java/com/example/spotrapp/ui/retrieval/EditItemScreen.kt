@@ -10,7 +10,6 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -55,6 +54,7 @@ import coil.compose.AsyncImage
 import com.example.spotrapp.data.local.ItemEntity
 import com.example.spotrapp.data.repository.Resource
 import com.example.spotrapp.ui.common.ConfirmationPopup
+import com.example.spotrapp.ui.putaway.rememberCameraCapture
 import com.example.spotrapp.ui.common.OtherZoneButton
 import com.example.spotrapp.ui.common.ScreenHeader
 import com.example.spotrapp.ui.common.StatusPopup
