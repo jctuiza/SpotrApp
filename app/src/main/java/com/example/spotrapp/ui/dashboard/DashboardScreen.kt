@@ -515,7 +515,7 @@ fun DashboardScreen(
 
             TutorialOverlay(
                 message =
-                    "Tap the \"Scan Icon\" to log a new item",
+                    "This is where you scan items. Tap anywhere to continue.",
 
                 onDismiss =
                     onDismissTutorial,
