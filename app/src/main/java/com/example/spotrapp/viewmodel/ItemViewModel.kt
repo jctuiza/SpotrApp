@@ -88,6 +88,15 @@ class ItemViewModel @Inject constructor(
         }
     }
 
+    // Moves multiple selected items to one zone.
+    fun moveItemsToZone(itemIds: List<Int>, zoneId: Int) {
+        viewModelScope.launch {
+            repository.moveItemsToZone(itemIds, zoneId).collect { resource ->
+                _actionState.value = resource
+            }
+        }
+    }
+
     // logs a retrieve event, item stays in the list
     fun retrieveItem(item: ItemEntity) {
         viewModelScope.launch {
