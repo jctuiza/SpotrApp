@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// handle state for items
 @HiltViewModel
 class ItemViewModel @Inject constructor(
     private val repository: ItemRepository
@@ -22,7 +21,6 @@ class ItemViewModel @Inject constructor(
 
     val itemState: StateFlow<Resource<List<ItemEntity>>> = _itemState
 
-    // most recent action (delete, add etc)
     private val _actionState =
         MutableStateFlow<Resource<Unit>?>(null)
 
@@ -39,13 +37,7 @@ class ItemViewModel @Inject constructor(
     fun addItem(item: ItemEntity) {
         viewModelScope.launch {
 
-            /*
-             * New items must have a zone.
-             *
-             * An item can only have a null zoneId after its assigned
-             * zone has been deleted. Users should select a valid zone
-             * when adding a new item.
-             */
+            
             val zoneId = item.zoneId
 
             if (zoneId == null) {
@@ -102,7 +94,6 @@ class ItemViewModel @Inject constructor(
         }
     }
 
-    // Moves multiple selected items to one zone.
     fun moveItemsToZone(itemIds: List<Int>, zoneId: Int) {
         viewModelScope.launch {
             repository.moveItemsToZone(itemIds, zoneId).collect { resource ->
