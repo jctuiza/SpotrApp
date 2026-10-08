@@ -74,7 +74,21 @@ class ItemViewModel @Inject constructor(
 
     fun updateItem(item: ItemEntity) {
         viewModelScope.launch {
-            repository.updateItem(item).collect { resource ->
+            val zoneId = item.zoneId
+            if (zoneId == null) {
+                _actionState.value = Resource.Error("Please select a zone before saving the item.")
+                return@launch
+            }
+
+            val trimmedName = item.name.trim()
+            if (repository.isDuplicate(trimmedName, zoneId, item.id)) {
+                _actionState.value = Resource.Error(
+                    """ + trimmedName + "" already exists in this zone."
+                )
+                return@launch
+            }
+
+            repository.updateItem(item.copy(name = trimmedName)).collect { resource ->
                 _actionState.value = resource
             }
         }
