@@ -7,7 +7,6 @@ import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
-// dao
 @Dao
 interface ItemDao {
 
@@ -23,7 +22,6 @@ interface ItemDao {
     @Query("SELECT * FROM items ORDER BY id DESC")
     fun getAllItems(): Flow<List<ItemEntity>>
 
-    // Used by the duplicate item check
     @Query(
         "SELECT * FROM items " +
                 "WHERE LOWER(name) = LOWER(:name) AND zoneId = :zoneId " +
@@ -34,7 +32,6 @@ interface ItemDao {
         zoneId: Int
     ): ItemEntity?
 
-    // Checks whether a zone still has items assigned to it.
     @Query("SELECT COUNT(*) FROM items WHERE zoneId = :zoneId")
     suspend fun countItemsInZone(zoneId: Int): Int
 
