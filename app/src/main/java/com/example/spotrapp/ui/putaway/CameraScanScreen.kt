@@ -166,6 +166,7 @@ fun CameraScanScreen(
                 message = "This is where you capture or choose an item photo. Tap anywhere to continue.",
                 onDismiss = onDismissTutorial,
                 highlightBounds = shutterButtonBounds,
+                highlightCorrectionY = (-24).dp,
                 highlightShape = CircleShape
             )
         }
