@@ -117,9 +117,9 @@ fun AddItemScreen(
     var saveButtonBounds by remember { mutableStateOf<Rect?>(null) }
 
     val tutorialSteps = listOf(
-        "Type or say your item's name here" to nameFieldBounds,
-        "Pick which zone you're storing it in" to zoneSectionBounds,
-        "Tap Save when you're ready" to saveButtonBounds
+        "Enter or speak an item's name here. Tap anywhere to continue." to nameFieldBounds,
+        "Choose the zone where the item will be stored. Tap anywhere to continue." to zoneSectionBounds,
+        "Save the item here when you're ready. Tap anywhere to finish the tutorial." to saveButtonBounds
     )
 
     val zones = (zoneState as? Resource.Success)?.data ?: emptyList()
