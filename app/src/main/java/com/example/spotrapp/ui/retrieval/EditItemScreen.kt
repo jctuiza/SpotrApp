@@ -4,10 +4,12 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.net.Uri
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -91,6 +93,17 @@ fun EditItemScreen(
 
 // Static text field state
     var itemName by remember { mutableStateOf(item.name) }
+    var editedImagePath by remember { mutableStateOf(item.imagePath) }
+
+    val context = LocalContext.current
+    val cameraCapture = rememberCameraCapture { path -> editedImagePath = path }
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            editedImagePath = copyGalleryImageForEdit(context, uri)
+        }
+    }
 
 // Keep the zone name in the UI because ZoneButton and OtherZoneButton work with zone names
     val zones = (zoneState as? Resource.Success)?.data ?: emptyList()
@@ -373,16 +386,38 @@ fun EditItemScreen(
                     contentAlignment = Alignment.Center
                 ) {
 
-                    if (item.imagePath != null) {
+                    if (editedImagePath != null) {
 
                         AsyncImage(
-                            model = File(item.imagePath),
+                            model = File(editedImagePath!!),
                             contentDescription = item.name,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
                     }
                 }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = { cameraCapture.launch() },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary)
+                    ) {
+                        Text("Camera", color = SpotrWhite)
+                    }
+                    Button(
+                        onClick = { galleryLauncher.launch("image/*") },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary)
+                    ) {
+                        Text("Gallery", color = SpotrPrimary)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Item name
                 Column {
@@ -799,7 +834,8 @@ fun EditItemScreen(
                             item.copy(
                                 name = itemName.trim(),
                                 type = itemName.trim(),
-                                zoneId = selectedZoneEntity.id
+                                zoneId = selectedZoneEntity.id,
+                                imagePath = editedImagePath
                             )
                         )
                     }
@@ -844,5 +880,19 @@ fun EditItemScreen(
                 }
             )
         }
+    }
+}
+
+
+private fun copyGalleryImageForEdit(context: android.content.Context, uri: Uri): String? {
+    return try {
+        val dir = java.io.File(context.getExternalFilesDir(null), "item_photos").apply { mkdirs() }
+        val file = java.io.File(dir, "EDIT_GALLERY_${System.currentTimeMillis()}.jpg")
+        context.contentResolver.openInputStream(uri)?.use { input ->
+            file.outputStream().use { output -> input.copyTo(output) }
+        } ?: return null
+        file.absolutePath
+    } catch (_: Exception) {
+        null
     }
 }
