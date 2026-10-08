@@ -82,16 +82,13 @@ fun EditItemScreen(
     val actionState by itemViewModel.actionState.collectAsStateWithLifecycle()
     val zoneActionState by zoneViewModel.actionState.collectAsStateWithLifecycle()
 
-// dialog states
     var showConfirmEditPopup by remember { mutableStateOf(false) }
     var showSavedPopup by remember { mutableStateOf(false) }
     var showConfirmCancelPopup by remember { mutableStateOf(false) }
     var showAddZoneDialog by remember { mutableStateOf(false) }
 
-// Used to know that the current zone action came from this screen.
     var addingZoneFromItemScreen by remember { mutableStateOf(false) }
 
-// Static text field state
     var itemName by remember { mutableStateOf(item.name) }
     var editedImagePath by remember { mutableStateOf(item.imagePath) }
 
@@ -105,7 +102,6 @@ fun EditItemScreen(
         }
     }
 
-// Keep the zone name in the UI because ZoneButton and OtherZoneButton work with zone names
     val zones = (zoneState as? Resource.Success)?.data ?: emptyList()
 
     val initialZoneName =
@@ -115,11 +111,9 @@ fun EditItemScreen(
         mutableStateOf(initialZoneName)
     }
 
-// error state
     var nameError by remember { mutableStateOf<String?>(null) }
     var zoneError by remember { mutableStateOf<String?>(null) }
 
-// voice input states
     var isListening by remember { mutableStateOf(false) }
     var voiceError by remember { mutableStateOf<String?>(null) }
 
@@ -358,11 +352,9 @@ fun EditItemScreen(
                 )
         ) {
 
-            // Screen header
             ScreenHeader(
                 title = "Edit Item",
                 onBack = {
-                    // same logic just like in add item screen
                     showConfirmCancelPopup = true
                 }
             )
@@ -374,7 +366,6 @@ fun EditItemScreen(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
 
-                // Item image
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -419,7 +410,6 @@ fun EditItemScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Item name
                 Column {
 
                     Text(
@@ -549,7 +539,6 @@ fun EditItemScreen(
                     )
                 }
 
-                // Zones
                 Column {
 
                     if (zones.isEmpty()) {
@@ -611,7 +600,6 @@ fun EditItemScreen(
 
                     } else {
 
-                        // Suggested zones
                         Column {
 
                             Text(
@@ -647,7 +635,6 @@ fun EditItemScreen(
                             }
                         }
 
-                        // Other zones
                         if (zoneChoices.other.isNotEmpty()) {
 
                             Column {
@@ -740,7 +727,6 @@ fun EditItemScreen(
                     )
                 }
 
-                // Save button
                 Button(
                     onClick = {
 
@@ -790,7 +776,6 @@ fun EditItemScreen(
             }
         }
 
-        // Add Zone popup
         if (showAddZoneDialog) {
 
             AddZoneDialog(
@@ -806,7 +791,6 @@ fun EditItemScreen(
             )
         }
 
-        // confirm dialog
         if (showConfirmEditPopup) {
 
             ConfirmationPopup(
@@ -847,7 +831,6 @@ fun EditItemScreen(
             )
         }
 
-        // saved dialog
         if (showSavedPopup) {
 
             StatusPopup(
@@ -861,7 +844,6 @@ fun EditItemScreen(
             )
         }
 
-        // cancel dialog
         if (showConfirmCancelPopup) {
 
             ConfirmationPopup(
@@ -882,7 +864,6 @@ fun EditItemScreen(
         }
     }
 }
-
 
 private fun copyGalleryImageForEdit(context: android.content.Context, uri: Uri): String? {
     return try {
