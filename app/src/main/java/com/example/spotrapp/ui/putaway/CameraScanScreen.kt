@@ -1,5 +1,9 @@
 package com.example.spotrapp.ui.putaway
 
+import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,11 +22,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
@@ -47,8 +53,18 @@ fun CameraScanScreen(
 
     // state for tutorial bounds
     var shutterButtonBounds by remember { mutableStateOf<Rect?>(null) }
+    val context = LocalContext.current
 
     val cameraCapture = rememberCameraCapture(onPhotoCaptured = onPhotoCaptured)
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            val localPath = copyGalleryImageToAppStorage(context, uri)
+            if (localPath != null) onPhotoCaptured(localPath)
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -90,6 +106,20 @@ fun CameraScanScreen(
                     textAlign = TextAlign.Center,
                     color = SpotrGray
                 )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = SpotrWhite,
+                    onClick = { galleryLauncher.launch("image/*") }
+                ) {
+                    Text(
+                        text = "Choose from Gallery",
+                        color = SpotrPrimary,
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(15.dp))
 
@@ -144,5 +174,27 @@ fun CameraScanScreen(
                 highlightShape = CircleShape
             )
         }
+    }
+}
+
+private fun copyGalleryImageToAppStorage(context: Context, uri: Uri): String? {
+    return try {
+        val photoDir = java.io.File(
+            context.getExternalFilesDir(null),
+            "item_photos"
+        ).apply { mkdirs() }
+
+        val file = java.io.File(
+            photoDir,
+            "GALLERY_${System.currentTimeMillis()}.jpg"
+        )
+
+        context.contentResolver.openInputStream(uri)?.use { input ->
+            file.outputStream().use { output -> input.copyTo(output) }
+        } ?: return null
+
+        file.absolutePath
+    } catch (_: Exception) {
+        null
     }
 }
