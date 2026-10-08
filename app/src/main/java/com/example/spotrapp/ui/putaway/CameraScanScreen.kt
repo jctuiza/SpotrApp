@@ -143,7 +143,6 @@ fun CameraScanScreen(
                             },
                         shape = CircleShape,
                         color = SpotrPrimary,
-                        // was onScanClick — now actually launches the camera
                         onClick = { cameraCapture.launch() }
                     ) {
                         Box(
