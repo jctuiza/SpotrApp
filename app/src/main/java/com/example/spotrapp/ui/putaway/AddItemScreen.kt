@@ -906,25 +906,63 @@ fun AddItemScreen(
         }
 
         if (showTutorialCompleteDialog) {
-            androidx.compose.material3.AlertDialog(
-                onDismissRequest = {},
-                title = {
-                    Text("Tutorial Complete")
-                },
-                text = {
-                    Text("You're all set! You can now use Spotr to organize your items.")
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            showTutorialCompleteDialog = false
-                            onTutorialComplete()
-                        }
+            Dialog(
+                onDismissRequest = {}
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color.White,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .border(
+                            1.dp,
+                            SpotrSecondary,
+                            RoundedCornerShape(12.dp)
+                        )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp)
                     ) {
-                        Text("Go to Home")
+                        Text(
+                            text = "Tutorial Complete!",
+                            color = SpotrPrimary,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            text = "You're all set! You can now use Spotr to organize your items.",
+                            color = Color.DarkGray,
+                            fontSize = 14.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Button(
+                            onClick = {
+                                showTutorialCompleteDialog = false
+                                onTutorialComplete()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = SpotrPrimary
+                            ),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text(
+                                text = "Back to Home",
+                                color = SpotrWhite,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
-            )
+            }
         }
     }
 }
