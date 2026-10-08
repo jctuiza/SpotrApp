@@ -894,6 +894,7 @@ fun AddItemScreen(
                 TutorialOverlay(
                     message = stepMessage,
                     highlightBounds = stepBounds,
+                    highlightCorrectionY = (-24).dp,
                     onDismiss = {
                         if (localTutorialStep < tutorialSteps.lastIndex) {
                             localTutorialStep++
