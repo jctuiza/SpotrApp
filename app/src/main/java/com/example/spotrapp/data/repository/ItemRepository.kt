@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
-// middleman ng itemdao - itemviewmodel
 class ItemRepository @Inject constructor(
     private val itemDao: ItemDao,
     private val historyRepository: HistoryRepository
