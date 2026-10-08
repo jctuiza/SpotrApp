@@ -39,7 +39,9 @@ fun TutorialOverlay(
     highlightOffsetX: Dp = 0.dp,
     highlightOffsetY: Dp = 0.dp,
     highlightShape: Shape = RoundedCornerShape(8.dp),
-    highlightBounds: Rect? = null
+    highlightBounds: Rect? = null,
+    highlightCorrectionX: Dp = 0.dp,
+    highlightCorrectionY: Dp = 0.dp
 ) {
     val density = LocalDensity.current
 
@@ -55,8 +57,14 @@ fun TutorialOverlay(
                     modifier = Modifier
                         .offset {
                             IntOffset(
-                                highlightBounds.left.roundToInt(),
-                                highlightBounds.top.roundToInt()
+                                (
+                                    highlightBounds.left +
+                                        highlightCorrectionX.toPx()
+                                ).roundToInt(),
+                                (
+                                    highlightBounds.top +
+                                        highlightCorrectionY.toPx()
+                                ).roundToInt()
                             )
                         }
                         .size(
