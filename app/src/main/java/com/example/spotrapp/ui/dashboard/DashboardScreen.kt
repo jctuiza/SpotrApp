@@ -53,35 +53,27 @@ fun DashboardScreen(
 ) {
     val context = LocalContext.current
 
-    // All ang default na selected zone.
-    // All is only displayed when at least one zone exists.
     var selectedZone by remember { mutableStateOf("All") }
 
-    // Add zone dialog state.
     var showAddZoneDialog by remember { mutableStateOf(false) }
 
-    // Delete zone dialog states.
     var showDeleteZoneDialog by remember { mutableStateOf(false) }
     var zoneToDelete by remember { mutableStateOf<ZoneEntity?>(null) }
 
-    // Item details sheet states (three dots).
     var showItemDetailsSheet by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf<ItemEntity?>(null) }
 
-    // Scan button state.
     var scanButtonBounds by remember { mutableStateOf<Rect?>(null) }
 
     var selectedItemIds by remember { mutableStateOf(setOf<Int>()) }
     var showMoveDialog by remember { mutableStateOf(false) }
     var showRenameZoneDialog by remember { mutableStateOf(false) }
 
-    // Data galing sa ViewModels.
     val itemState by itemViewModel.itemState.collectAsStateWithLifecycle()
     val zoneState by zoneViewModel.zoneState.collectAsStateWithLifecycle()
     val zoneActionState by zoneViewModel.actionState.collectAsStateWithLifecycle()
     val deleteItemCount by zoneViewModel.deleteItemCount.collectAsStateWithLifecycle()
 
-    // List ng items, empty muna habang naglo-load.
     val items =
         if (itemState is Resource.Success) {
             (itemState as Resource.Success<List<ItemEntity>>).data
@@ -89,7 +81,6 @@ fun DashboardScreen(
             emptyList()
         }
 
-    // List ng zones, empty muna habang naglo-load.
     val zones =
         if (zoneState is Resource.Success) {
             (zoneState as Resource.Success<List<ZoneEntity>>).data
