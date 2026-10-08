@@ -97,10 +97,7 @@ fun DashboardScreen(
             emptyList()
         }
 
-    /*
-     * If the currently selected zone was deleted,
-     * automatically return to All.
-     */
+    
     LaunchedEffect(zones) {
         if (
             selectedZone != "All" &&
@@ -110,9 +107,7 @@ fun DashboardScreen(
         }
     }
 
-    /*
-     * Show a toast when a zone action fails.
-     */
+    
     LaunchedEffect(zoneActionState) {
         when (val action = zoneActionState) {
 
@@ -131,10 +126,7 @@ fun DashboardScreen(
         }
     }
 
-    /*
-     * Once the ViewModel has determined how many items
-     * are inside the zone, show the delete confirmation.
-     */
+    
     LaunchedEffect(deleteItemCount) {
 
         if (deleteItemCount != null) {
@@ -177,15 +169,7 @@ fun DashboardScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
 
-                    /*
-                     * Zone chips are displayed ONLY when
-                     * at least one zone already exists.
-                     *
-                     * When there are zero zones:
-                     * - All chip is hidden
-                     * - + chip is hidden
-                     * - Zone chips are hidden
-                     */
+                    
                     if (zones.isNotEmpty()) {
 
                         ZoneFilterRow(
@@ -237,11 +221,7 @@ fun DashboardScreen(
                         }
                     }
 
-                    /*
-                     * Filter the items according to the selected zone.
-                     *
-                     * "All" displays all items, including unassigned items.
-                     */
+                    
                     val filteredItems =
                         if (selectedZone == "All") {
 
@@ -266,24 +246,14 @@ fun DashboardScreen(
                             }
                         }
 
-                    /*
-                     * Do not show an empty state while items
-                     * are still loading.
-                     */
+                    
                     if (itemState is Resource.Loading) {
 
                         Box(
                             modifier = Modifier.weight(1f)
                         )
 
-                        /*
-                         * FIRST-TIME EMPTY STATE
-                         *
-                         * There are no zones yet.
-                         *
-                         * The Add Zone button is displayed in
-                         * the center of the screen.
-                         */
+                        
                     } else if (zones.isEmpty()) {
 
                         DashboardEmptyState(
@@ -294,10 +264,7 @@ fun DashboardScreen(
                             }
                         )
 
-                        /*
-                         * There are zones, but the selected zone
-                         * currently contains no items.
-                         */
+                        
                     } else if (filteredItems.isEmpty()) {
 
                         DashboardEmptyState(
@@ -305,9 +272,7 @@ fun DashboardScreen(
                             emptyState = DashboardEmptyStateType.NO_ITEMS
                         )
 
-                        /*
-                         * Normal dashboard with items.
-                         */
+                        
                     } else {
 
                         LazyVerticalGrid(
@@ -348,9 +313,7 @@ fun DashboardScreen(
             }
         }
 
-        /*
-         * Add Zone dialog.
-         */
+        
         if (showAddZoneDialog) {
 
             AddZoneDialog(
@@ -382,9 +345,7 @@ fun DashboardScreen(
             )
         }
 
-        /*
-         * Delete Zone confirmation.
-         */
+        
         if (
             showDeleteZoneDialog &&
             zoneToDelete != null
@@ -538,9 +499,7 @@ fun DashboardScreen(
             )
         }
 
-        /*
-         * Item details bottom sheet.
-         */
+        
         if (
             showItemDetailsSheet &&
             selectedItem != null
@@ -557,12 +516,7 @@ fun DashboardScreen(
             )
         }
 
-        /*
-         * Tutorial overlay.
-         *
-         * The actual tutorial step/tap behavior is handled
-         * by TutorialOverlay.
-         */
+        
         if (
             showTutorial &&
             scanButtonBounds != null
