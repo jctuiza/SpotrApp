@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -68,6 +69,10 @@ fun DashboardScreen(
 
     // Scan button state.
     var scanButtonBounds by remember { mutableStateOf<Rect?>(null) }
+
+    var selectedItemIds by remember { mutableStateOf(setOf<Int>()) }
+    var showMoveDialog by remember { mutableStateOf(false) }
+    var showRenameZoneDialog by remember { mutableStateOf(false) }
 
     // Data galing sa ViewModels.
     val itemState by itemViewModel.itemState.collectAsStateWithLifecycle()
@@ -209,6 +214,28 @@ fun DashboardScreen(
                         )
                     }
 
+                    if (selectedItemIds.isNotEmpty()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = { showMoveDialog = true },
+                                colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Move " + selectedItemIds.size + " selected", color = SpotrWhite)
+                            }
+                            Button(
+                                onClick = { selectedItemIds = emptySet() },
+                                colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Cancel", color = SpotrPrimary)
+                            }
+                        }
+                    }
+
                     /*
                      * Filter the items according to the selected zone.
                      *
@@ -296,11 +323,18 @@ fun DashboardScreen(
 
                                 ItemCard(
                                     item = item,
-
+                                    selected = selectedItemIds.contains(item.id),
+                                    selectionMode = selectedItemIds.isNotEmpty(),
                                     onClick = {
-                                        onItemClick(item)
+                                        if (selectedItemIds.isNotEmpty()) {
+                                            selectedItemIds = if (selectedItemIds.contains(item.id)) selectedItemIds - item.id else selectedItemIds + item.id
+                                        } else {
+                                            onItemClick(item)
+                                        }
                                     },
-
+                                    onLongClick = {
+                                        selectedItemIds = selectedItemIds + item.id
+                                    },
                                     onMenuClick = {
                                         selectedItem = item
                                         showItemDetailsSheet = true
@@ -408,32 +442,29 @@ fun DashboardScreen(
                 },
 
                 confirmButton = {
-
-                    Button(
-                        onClick = {
-
-                            zoneViewModel.deleteZone(zone)
-
-                            if (selectedZone == zone.name) {
-                                selectedZone = "All"
-                            }
-
-                            showDeleteZoneDialog = false
-                            zoneToDelete = null
-
-                            zoneViewModel.clearDeleteItemCount()
-                        },
-
-                        colors =
-                            ButtonDefaults.buttonColors(
-                                containerColor = SpotrPrimary
-                            )
-                    ) {
-
-                        Text(
-                            text = "Delete",
-                            color = SpotrWhite
-                        )
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(
+                            onClick = {
+                                showDeleteZoneDialog = false
+                                zoneViewModel.clearDeleteItemCount()
+                                showRenameZoneDialog = true
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary)
+                        ) {
+                            Text("Rename", color = SpotrPrimary)
+                        }
+                        Button(
+                            onClick = {
+                                zoneViewModel.deleteZone(zone)
+                                if (selectedZone == zone.name) selectedZone = "All"
+                                showDeleteZoneDialog = false
+                                zoneToDelete = null
+                                zoneViewModel.clearDeleteItemCount()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary)
+                        ) {
+                            Text("Delete", color = SpotrWhite)
+                        }
                     }
                 },
 
@@ -459,6 +490,49 @@ fun DashboardScreen(
                             color = SpotrPrimary
                         )
                     }
+                }
+            )
+        }
+
+        if (showRenameZoneDialog && zoneToDelete != null) {
+            RenameZoneDialog(
+                zone = zoneToDelete!!,
+                onDismiss = {
+                    showRenameZoneDialog = false
+                    zoneToDelete = null
+                },
+                onConfirm = { newName ->
+                    zoneViewModel.renameZone(zoneToDelete!!, newName)
+                    showRenameZoneDialog = false
+                    zoneToDelete = null
+                }
+            )
+        }
+
+        if (showMoveDialog && selectedItemIds.isNotEmpty()) {
+            AlertDialog(
+                onDismissRequest = { showMoveDialog = false },
+                title = { Text("Move selected items") },
+                text = {
+                    Column {
+                        zones.forEach { zone ->
+                            Button(
+                                onClick = {
+                                    itemViewModel.moveItemsToZone(selectedItemIds.toList(), zone.id)
+                                    selectedItemIds = emptySet()
+                                    showMoveDialog = false
+                                    Toast.makeText(context, "Items moved to " + zone.name + ".", Toast.LENGTH_SHORT).show()
+                                },
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary)
+                            ) {
+                                Text(zone.name, color = SpotrPrimary)
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    Button(onClick = { showMoveDialog = false }) { Text("Cancel") }
                 }
             )
         }
