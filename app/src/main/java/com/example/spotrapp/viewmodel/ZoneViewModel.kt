@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// state for zones
 @HiltViewModel
 class ZoneViewModel @Inject constructor(
     private val repository: ZoneRepository
