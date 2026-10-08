@@ -50,7 +50,6 @@ fun CameraScanScreen(
     onDismissTutorial: () -> Unit = {}
 ) {
 
-    // state for tutorial bounds
     var shutterButtonBounds by remember { mutableStateOf<Rect?>(null) }
     val context = LocalContext.current
 
@@ -73,7 +72,6 @@ fun CameraScanScreen(
                 .background(Color.Black)
         ) {
 
-            // Back button
             Surface(
                 shape = RoundedCornerShape(12.dp),
                 color = Color.Transparent,
@@ -122,7 +120,6 @@ fun CameraScanScreen(
 
                 Spacer(modifier = Modifier.height(15.dp))
 
-                // Camera scanning area
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
