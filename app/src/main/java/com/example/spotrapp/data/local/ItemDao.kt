@@ -35,7 +35,6 @@ interface ItemDao {
     @Query("SELECT COUNT(*) FROM items WHERE zoneId = :zoneId")
     suspend fun countItemsInZone(zoneId: Int): Int
 
-    // Used for bulk moving selected items to another zone.
     @Query("UPDATE items SET zoneId = :zoneId WHERE id IN (:itemIds)")
     suspend fun moveItemsToZone(itemIds: List<Int>, zoneId: Int): Int
 }
