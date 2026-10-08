@@ -50,11 +50,10 @@ data class OnboardingFeature(
 data class OnboardingPage(
     val title: String,
     val subtitle: String,
-    val features: List<OnboardingFeature> = emptyList(), // default empty, gagamitin lang for slides na may mga bullets
+    val features: List<OnboardingFeature> = emptyList(),
     val buttonLabel: String
 )
 
-// used list para iistore dito yung kada slide/page
 private val onboardingPages = listOf(
     OnboardingPage(
         title = "Welcome to Spotr!",
@@ -80,21 +79,19 @@ private val onboardingPages = listOf(
     )
 )
 
-// main onboarding screen
 @Composable
-fun OnboardingScreen(onBoardingFinished: () -> Unit) {
-
-    // kinukuha yung current na page gamit yung onboardingPage list
+fun OnboardingScreen(
+    onBoardingFinished: () -> Unit,
+    onStartTutorial: () -> Unit = onBoardingFinished
+) {
     var currentPage by remember { mutableIntStateOf(0) }
     val page = onboardingPages[currentPage]
 
     Column(modifier = Modifier.fillMaxSize()) {
-
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // balik lang sa previous page
             if (currentPage > 0) {
                 IconButton(onClick = { currentPage-- }) {
                     Icon(
@@ -107,7 +104,6 @@ fun OnboardingScreen(onBoardingFinished: () -> Unit) {
                 Spacer(modifier = Modifier.size(48.dp))
             }
 
-            // rekta dashboard
             TextButton(onClick = onBoardingFinished) {
                 Text("Skip", color = SpotrPrimary)
             }
@@ -118,15 +114,16 @@ fun OnboardingScreen(onBoardingFinished: () -> Unit) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // it-take yung current na page as parameter for onboardingslide
             OnboardingSlide(page = page)
         }
 
-        // go to next page onClick
         Button(
-            // if last page na mat-trigger yung onboardingFinished()
             onClick = {
-                if (currentPage < onboardingPages.lastIndex) currentPage++ else onBoardingFinished()
+                if (currentPage < onboardingPages.lastIndex) {
+                    currentPage++
+                } else {
+                    onStartTutorial()
+                }
             },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             shape = RoundedCornerShape(4.dp),
@@ -144,7 +141,6 @@ fun OnboardingScreen(onBoardingFinished: () -> Unit) {
     }
 }
 
-// display content base sa current na page
 @Composable
 fun OnboardingSlide(page: OnboardingPage) {
     Column(
@@ -169,7 +165,6 @@ fun OnboardingSlide(page: OnboardingPage) {
             textAlign = TextAlign.Center
         )
 
-        // loop base sa kung ilan ang feature bullet/s kada slide
         if (page.features.isNotEmpty()) {
             Spacer(Modifier.height(32.dp))
             Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
@@ -179,7 +174,6 @@ fun OnboardingSlide(page: OnboardingPage) {
     }
 }
 
-// layout para sa feature bulleta
 @Composable
 fun OnboardingFeatureRow(feature: OnboardingFeature) {
     Row(
@@ -199,7 +193,6 @@ fun OnboardingFeatureRow(feature: OnboardingFeature) {
     }
 }
 
-// page indicator design
 @Composable
 fun PageIndicator(
     pageCount: Int,
