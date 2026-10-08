@@ -1,7 +1,9 @@
 package com.example.spotrapp.navigation
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,23 +31,50 @@ import com.example.spotrapp.viewmodel.ItemViewModel
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+    val context = LocalContext.current
+    val onboardingPreferences =
+        remember {
+            context.getSharedPreferences(
+                "spotr_preferences",
+                Context.MODE_PRIVATE
+            )
+        }
 
     var activeTutorialStep by remember { mutableStateOf<String?>(null) }
 
+    val onboardingCompleted =
+        onboardingPreferences.getBoolean(
+            "onboarding_completed",
+            false
+        )
+
     NavHost(
         navController = navController,
-        startDestination = Routes.ONBOARDING,
+        startDestination =
+            if (onboardingCompleted) {
+                Routes.DASHBOARD
+            } else {
+                Routes.ONBOARDING
+            },
         modifier = modifier
     ) {
         composable(Routes.ONBOARDING) {
             OnboardingScreen(
                 onBoardingFinished = {
+                    onboardingPreferences.edit()
+                        .putBoolean("onboarding_completed", true)
+                        .apply()
+
                     activeTutorialStep = null
                     navController.navigate(Routes.DASHBOARD) {
                         popUpTo(Routes.ONBOARDING) { inclusive = true }
                     }
                 },
                 onStartTutorial = {
+                    onboardingPreferences.edit()
+                        .putBoolean("onboarding_completed", true)
+                        .apply()
+
                     activeTutorialStep = Routes.DASHBOARD
                     navController.navigate(Routes.DASHBOARD) {
                         popUpTo(Routes.ONBOARDING) { inclusive = true }
@@ -158,7 +187,6 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     }
                 },
                 showTutorial = activeTutorialStep == Routes.ADD_ITEM,
-                onDismissTutorial = {},
                 onTutorialComplete = {
                     activeTutorialStep = null
                     navController.navigate(Routes.DASHBOARD) {
