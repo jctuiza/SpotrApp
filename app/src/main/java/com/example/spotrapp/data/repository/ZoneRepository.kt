@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
-// zonedao - zoneviewmodel
 class ZoneRepository @Inject constructor(
     private val zoneDao: ZoneDao,
     private val itemDao: ItemDao
@@ -50,8 +49,6 @@ class ZoneRepository @Inject constructor(
     fun deleteZone(zone: ZoneEntity): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
         try {
-            // ItemEntity uses ForeignKey.SET_NULL, so deleting the zone
-            // automatically makes its items unassigned.
             zoneDao.delete(zone)
             emit(Resource.Success(Unit))
         } catch (e: Exception) {
