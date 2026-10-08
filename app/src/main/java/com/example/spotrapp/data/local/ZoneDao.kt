@@ -25,7 +25,6 @@ interface ZoneDao {
     @Query("SELECT * FROM zones WHERE LOWER(name) = LOWER(:name) LIMIT 1")
     suspend fun findByName(name: String): ZoneEntity?
 
-    // Used when an item needs the zone name from its zoneId.
     @Query("SELECT * FROM zones WHERE id = :zoneId LIMIT 1")
     suspend fun findById(zoneId: Int): ZoneEntity?
 }
