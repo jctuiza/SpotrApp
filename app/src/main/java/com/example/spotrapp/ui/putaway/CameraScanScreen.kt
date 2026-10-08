@@ -163,7 +163,7 @@ fun CameraScanScreen(
 
         if (showTutorial && shutterButtonBounds != null) {
             TutorialOverlay(
-                message = "Tap the camera icon to capture a photo of your item",
+                message = "This is where you capture or choose an item photo. Tap anywhere to continue.",
                 onDismiss = onDismissTutorial,
                 highlightBounds = shutterButtonBounds,
                 highlightShape = CircleShape
