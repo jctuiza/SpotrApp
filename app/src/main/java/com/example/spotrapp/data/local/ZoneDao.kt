@@ -22,7 +22,6 @@ interface ZoneDao {
     @Query("SELECT * FROM zones ORDER BY id ASC")
     fun getAllZones(): Flow<List<ZoneEntity>>
 
-    // Case-insensitive duplicate check.
     @Query("SELECT * FROM zones WHERE LOWER(name) = LOWER(:name) LIMIT 1")
     suspend fun findByName(name: String): ZoneEntity?
 
