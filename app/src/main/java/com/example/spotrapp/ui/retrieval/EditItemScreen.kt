@@ -101,7 +101,7 @@ fun EditItemScreen(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            editedImagePath = copyGalleryImageForEdit(context, uri)
+            copyGalleryImageForEdit(context, uri)?.let { editedImagePath = it }
         }
     }
 
