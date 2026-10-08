@@ -24,74 +24,46 @@ class ZoneRepository @Inject constructor(
             emit(Resource.Loading())
         }
         .catch { e ->
-            emit(
-                Resource.Error(
-                    e.message ?: "Failed to load zones"
-                )
-            )
+            emit(Resource.Error(e.message ?: "Failed to load zones"))
         }
 
-    fun addZone(
-        zone: ZoneEntity
-    ): Flow<Resource<ZoneEntity>> = flow {
-
+    fun addZone(zone: ZoneEntity): Flow<Resource<ZoneEntity>> = flow {
         emit(Resource.Loading())
-
         try {
-
-            val newId =
-                zoneDao.insert(zone)
-
-            val createdZone =
-                zone.copy(
-                    id = newId.toInt()
-                )
-
-            emit(
-                Resource.Success(createdZone)
-            )
-
+            val newId = zoneDao.insert(zone)
+            emit(Resource.Success(zone.copy(id = newId.toInt())))
         } catch (e: Exception) {
-
-            emit(
-                Resource.Error(
-                    e.message ?: "Failed to add zone"
-                )
-            )
+            emit(Resource.Error(e.message ?: "Failed to add zone"))
         }
     }
 
-    fun deleteZone(
-        zone: ZoneEntity
-    ): Flow<Resource<Unit>> = flow {
-
+    fun updateZone(zone: ZoneEntity): Flow<Resource<ZoneEntity>> = flow {
         emit(Resource.Loading())
-
         try {
+            zoneDao.update(zone)
+            emit(Resource.Success(zone))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Failed to rename zone"))
+        }
+    }
 
+    fun deleteZone(zone: ZoneEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            // ItemEntity uses ForeignKey.SET_NULL, so deleting the zone
+            // automatically makes its items unassigned.
             zoneDao.delete(zone)
-
-            emit(
-                Resource.Success(Unit)
-            )
-
+            emit(Resource.Success(Unit))
         } catch (e: Exception) {
-
-            emit(
-                Resource.Error(
-                    e.message ?: "Failed to delete zone"
-                )
-            )
+            emit(Resource.Error(e.message ?: "Failed to delete zone"))
         }
     }
 
-    suspend fun countItemsInZone(
-        zoneId: Int
-    ): Int =
+    suspend fun countItemsInZone(zoneId: Int): Int =
         itemDao.countItemsInZone(zoneId)
 
-    suspend fun isDuplicate(
-        name: String
-    ): Boolean =
-        zoneDao.findByName(name) != null
+    suspend fun isDuplicate(name: String, excludingZoneId: Int? = null): Boolean {
+        val existing = zoneDao.findByName(name)
+        return existing != null && existing.id != excludingZoneId
+    }
 }
