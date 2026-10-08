@@ -76,6 +76,7 @@ fun AddItemScreen(
     onSaved: () -> Unit,
     showTutorial: Boolean = false,
     onDismissTutorial: () -> Unit = {},
+    onTutorialComplete: () -> Unit = {},
     photoPath: String? = null,
     itemViewModel: ItemViewModel = hiltViewModel(),
     zoneViewModel: ZoneViewModel = hiltViewModel()
@@ -110,6 +111,7 @@ fun AddItemScreen(
 
     // states for tutorial overlay
     var localTutorialStep by remember { mutableIntStateOf(0) }
+    var showTutorialCompleteDialog by remember { mutableStateOf(false) }
     var nameFieldBounds by remember { mutableStateOf<Rect?>(null) }
     var zoneSectionBounds by remember { mutableStateOf<Rect?>(null) }
     var saveButtonBounds by remember { mutableStateOf<Rect?>(null) }
@@ -878,9 +880,9 @@ fun AddItemScreen(
             )
         }
 
-        // Tutorial
         if (
             showTutorial &&
+            !showTutorialCompleteDialog &&
             localTutorialStep < tutorialSteps.size
         ) {
 
@@ -892,23 +894,37 @@ fun AddItemScreen(
                 TutorialOverlay(
                     message = stepMessage,
                     highlightBounds = stepBounds,
-
                     onDismiss = {
-
-                        if (
-                            localTutorialStep <
-                            tutorialSteps.lastIndex
-                        ) {
-
+                        if (localTutorialStep < tutorialSteps.lastIndex) {
                             localTutorialStep++
-
                         } else {
-
-                            onDismissTutorial()
+                            showTutorialCompleteDialog = true
                         }
                     }
                 )
             }
+        }
+
+        if (showTutorialCompleteDialog) {
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = {},
+                title = {
+                    Text("Tutorial Complete")
+                },
+                text = {
+                    Text("You're all set! You can now use Spotr to organize your items.")
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showTutorialCompleteDialog = false
+                            onTutorialComplete()
+                        }
+                    ) {
+                        Text("Go to Home")
+                    }
+                }
+            )
         }
     }
 }
