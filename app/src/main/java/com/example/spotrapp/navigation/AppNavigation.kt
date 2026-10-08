@@ -64,7 +64,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     activeTutorialStep = Routes.DASHBOARD
                 },
                 onDismissTutorial = {
-                    activeTutorialStep = Routes.nextTutorialStep(Routes.DASHBOARD)
+                    activeTutorialStep = Routes.PUTAWAY
+                    navController.navigate(Routes.PUTAWAY)
                 },
                 onSearchClick = { navController.navigate(Routes.SEARCH) },
                 onHistoryClick = { navController.navigate(Routes.HISTORY) },
@@ -129,7 +130,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 },
                 showTutorial = activeTutorialStep == Routes.PUTAWAY,
                 onDismissTutorial = {
-                    activeTutorialStep = Routes.nextTutorialStep(Routes.PUTAWAY)
+                    activeTutorialStep = Routes.ADD_ITEM
+                    navController.navigate(Routes.addItem())
                 }
             )
         }
@@ -156,8 +158,13 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     }
                 },
                 showTutorial = activeTutorialStep == Routes.ADD_ITEM,
-                onDismissTutorial = {
-                    activeTutorialStep = Routes.nextTutorialStep(Routes.ADD_ITEM)
+                onDismissTutorial = {},
+                onTutorialComplete = {
+                    activeTutorialStep = null
+                    navController.navigate(Routes.DASHBOARD) {
+                        popUpTo(Routes.DASHBOARD) { inclusive = false }
+                        launchSingleTop = true
+                    }
                 },
                 photoPath = photoPath
             )
