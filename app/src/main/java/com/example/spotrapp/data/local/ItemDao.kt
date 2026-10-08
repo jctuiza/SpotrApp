@@ -26,7 +26,7 @@ interface ItemDao {
     // Used by the duplicate item check
     @Query(
         "SELECT * FROM items " +
-                "WHERE name = :name AND zoneId = :zoneId " +
+                "WHERE LOWER(name) = LOWER(:name) AND zoneId = :zoneId " +
                 "LIMIT 1"
     )
     suspend fun findByNameAndZone(
@@ -35,8 +35,10 @@ interface ItemDao {
     ): ItemEntity?
 
     // Checks whether a zone still has items assigned to it.
-    @Query(
-        "SELECT COUNT(*) FROM items WHERE zoneId = :zoneId"
-    )
+    @Query("SELECT COUNT(*) FROM items WHERE zoneId = :zoneId")
     suspend fun countItemsInZone(zoneId: Int): Int
+
+    // Used for bulk moving selected items to another zone.
+    @Query("UPDATE items SET zoneId = :zoneId WHERE id IN (:itemIds)")
+    suspend fun moveItemsToZone(itemIds: List<Int>, zoneId: Int): Int
 }
