@@ -64,8 +64,10 @@ class ItemRepository @Inject constructor(
         }
     }
 
-    suspend fun isDuplicate(name: String, zoneId: Int): Boolean =
-        itemDao.findByNameAndZone(name, zoneId) != null
+    suspend fun isDuplicate(name: String, zoneId: Int, excludingItemId: Int? = null): Boolean {
+        val existing = itemDao.findByNameAndZone(name, zoneId)
+        return existing != null && existing.id != excludingItemId
+    }
 
     fun moveItemsToZone(itemIds: List<Int>, zoneId: Int): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
