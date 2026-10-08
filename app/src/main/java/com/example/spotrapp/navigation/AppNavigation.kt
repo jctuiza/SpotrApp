@@ -30,8 +30,6 @@ import com.example.spotrapp.viewmodel.ItemViewModel
 fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
-    // Tutorial is deliberately disabled after a Skip.
-    // It is enabled only when the user explicitly chooses Start Tutorial.
     var activeTutorialStep by remember { mutableStateOf<String?>(null) }
 
     NavHost(
