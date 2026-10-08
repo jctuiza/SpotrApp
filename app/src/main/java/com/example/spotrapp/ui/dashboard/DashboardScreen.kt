@@ -521,7 +521,8 @@ fun DashboardScreen(
                     onDismissTutorial,
 
                 highlightBounds =
-                    scanButtonBounds
+                    scanButtonBounds,
+                highlightCorrectionY = (-24).dp
             )
         }
     }
