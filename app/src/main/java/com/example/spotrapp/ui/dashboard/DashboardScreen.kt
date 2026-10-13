@@ -1,6 +1,7 @@
 package com.example.spotrapp.ui.dashboard
 
 import android.widget.Toast
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +27,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -348,101 +354,25 @@ fun DashboardScreen(
             val zone =
                 zoneToDelete!!
 
-            AlertDialog(
-                onDismissRequest = {
-
+            DeleteZoneDialog(
+                zoneName = zone.name,
+                itemCount = itemCount,
+                onDismiss = {
                     showDeleteZoneDialog = false
                     zoneToDelete = null
-
                     zoneViewModel.clearDeleteItemCount()
                 },
-
-                title = {
-
-                    Text(
-                        text = "Delete \"${zone.name}\"?"
-                    )
+                onRename = {
+                    showDeleteZoneDialog = false
+                    zoneViewModel.clearDeleteItemCount()
+                    showRenameZoneDialog = true
                 },
-
-                text = {
-
-                    if (itemCount > 0) {
-
-                        Text(
-                            text =
-                                if (itemCount == 1) {
-
-                                    "This zone contains 1 item. " +
-                                            "Deleting this zone will move " +
-                                            "the item to Unassigned."
-
-                                } else {
-
-                                    "This zone contains $itemCount items. " +
-                                            "Deleting this zone will move " +
-                                            "these items to Unassigned."
-                                }
-                        )
-
-                    } else {
-
-                        Text(
-                            text =
-                                "This zone is empty. " +
-                                        "Are you sure you want to delete it?"
-                        )
-                    }
-                },
-
-                confirmButton = {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(
-                            onClick = {
-                                showDeleteZoneDialog = false
-                                zoneViewModel.clearDeleteItemCount()
-                                showRenameZoneDialog = true
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary)
-                        ) {
-                            Text("Rename", color = SpotrPrimary)
-                        }
-                        Button(
-                            onClick = {
-                                zoneViewModel.deleteZone(zone)
-                                if (selectedZone == zone.name) selectedZone = "All"
-                                showDeleteZoneDialog = false
-                                zoneToDelete = null
-                                zoneViewModel.clearDeleteItemCount()
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary)
-                        ) {
-                            Text("Delete", color = SpotrWhite)
-                        }
-                    }
-                },
-
-                dismissButton = {
-
-                    Button(
-                        onClick = {
-
-                            showDeleteZoneDialog = false
-                            zoneToDelete = null
-
-                            zoneViewModel.clearDeleteItemCount()
-                        },
-
-                        colors =
-                            ButtonDefaults.buttonColors(
-                                containerColor = SpotrSecondary
-                            )
-                    ) {
-
-                        Text(
-                            text = "Cancel",
-                            color = SpotrPrimary
-                        )
-                    }
+                onDelete = {
+                    zoneViewModel.deleteZone(zone)
+                    if (selectedZone == zone.name) selectedZone = "All"
+                    showDeleteZoneDialog = false
+                    zoneToDelete = null
+                    zoneViewModel.clearDeleteItemCount()
                 }
             )
         }
@@ -525,4 +455,78 @@ fun DashboardScreen(
             )
         }
     }
+
+
+@Composable
+private fun DeleteZoneDialog(
+    zoneName: String,
+    itemCount: Int,
+    onDismiss: () -> Unit,
+    onRename: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = Color.White,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .border(1.dp, SpotrSecondary, RoundedCornerShape(12.dp))
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Delete \"$zoneName\"?",
+                    color = SpotrPrimary,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    text = when {
+                        itemCount == 1 -> "This zone contains 1 item. Deleting it will move the item to Unassigned."
+                        itemCount > 1 -> "This zone contains $itemCount items. Deleting it will move them to Unassigned."
+                        else -> "This zone is empty. Are you sure you want to delete it?"
+                    },
+                    color = Color.DarkGray,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(24.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = onDismiss,
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Cancel", color = SpotrPrimary, fontWeight = FontWeight.Bold)
+                    }
+                    Button(
+                        onClick = onRename,
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Rename", color = SpotrPrimary, fontWeight = FontWeight.Bold)
+                    }
+                    Button(
+                        onClick = onDelete,
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Delete", color = SpotrWhite, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+    }
+}
 }
