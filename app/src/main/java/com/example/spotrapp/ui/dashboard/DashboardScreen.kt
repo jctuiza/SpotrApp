@@ -522,7 +522,6 @@ fun DashboardScreen(
 
                 highlightBounds =
                     scanButtonBounds,
-                highlightCorrectionY = (-24).dp
             )
         }
     }
