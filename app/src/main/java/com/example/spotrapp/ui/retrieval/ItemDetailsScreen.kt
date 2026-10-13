@@ -70,6 +70,7 @@ fun ItemDetailsScreen(
     val zoneState by zoneViewModel.zoneState.collectAsStateWithLifecycle()
 
     var showRetrievedPopup by remember { mutableStateOf(false) }
+    var showConfirmRetrievePopup by remember { mutableStateOf(false) }
     var showConfirmDeletePopup by remember { mutableStateOf(false) }
     var showDeletedPopup by remember { mutableStateOf(false) }
     var showEditNotesDialog by remember { mutableStateOf(false) }
@@ -221,8 +222,7 @@ fun ItemDetailsScreen(
                     // logs the retrieved event immediately.
                     Button(
                         onClick = {
-                            pendingAction = PendingAction.RETRIEVE
-                            itemViewModel.retrieveItem(item)
+                            showConfirmRetrievePopup = true
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -290,6 +290,22 @@ fun ItemDetailsScreen(
                     }
                 }
             }
+        }
+
+        if (showConfirmRetrievePopup) {
+            ConfirmationPopup(
+                message = "Are you sure you want to retrieve this item?",
+                confirmLabel = "Retrieve",
+                cancelLabel = "Cancel",
+                onConfirm = {
+                    showConfirmRetrievePopup = false
+                    pendingAction = PendingAction.RETRIEVE
+                    itemViewModel.retrieveItem(item)
+                },
+                onCancel = {
+                    showConfirmRetrievePopup = false
+                }
+            )
         }
 
         if (showRetrievedPopup) {
