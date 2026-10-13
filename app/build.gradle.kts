@@ -59,7 +59,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.material3)
     implementation(libs.hilt.android)
-    implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.javax.inject)
     ksp(libs.hilt.compiler)
