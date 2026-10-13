@@ -27,7 +27,7 @@ interface ItemDao {
 
     @Query(
         "SELECT * FROM items " +
-                "WHERE LOWER(name) = LOWER(:name) AND zoneId = :zoneId " +
+                "WHERE LOWER(name) = LOWER(:name) AND zoneId = :zoneId AND isRetrieved = 0 " +
                 "LIMIT 1"
     )
     suspend fun findByNameAndZone(
@@ -35,7 +35,7 @@ interface ItemDao {
         zoneId: Int
     ): ItemEntity?
 
-    @Query("SELECT COUNT(*) FROM items WHERE zoneId = :zoneId")
+    @Query("SELECT COUNT(*) FROM items WHERE zoneId = :zoneId AND isRetrieved = 0")
     suspend fun countItemsInZone(zoneId: Int): Int
 
     @Query("UPDATE items SET zoneId = :zoneId WHERE id IN (:itemIds)")
