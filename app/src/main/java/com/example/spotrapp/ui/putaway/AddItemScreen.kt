@@ -101,17 +101,6 @@ fun AddItemScreen(
     var showConfirmCancelPopup by remember { mutableStateOf(false) }
     var showAddZoneDialog by remember { mutableStateOf(false) }
 
-    BackHandler(
-        enabled = !showConfirmCancelPopup &&
-            !showConfirmAddPopup &&
-            !showSavedPopup &&
-            !showAddZoneDialog &&
-            !showPhotoSourceDialog &&
-            !showTutorial &&
-            !showTutorialCompleteDialog
-    ) {
-        showConfirmCancelPopup = true
-    }
 
     // Used to know that the current zone action came from this screen.
     var addingZoneFromItemScreen by remember { mutableStateOf(false) }
@@ -138,6 +127,18 @@ fun AddItemScreen(
     var nameFieldBounds by remember { mutableStateOf<Rect?>(null) }
     var zoneSectionBounds by remember { mutableStateOf<Rect?>(null) }
     var saveButtonBounds by remember { mutableStateOf<Rect?>(null) }
+
+    BackHandler(
+        enabled = !showConfirmCancelPopup &&
+            !showConfirmAddPopup &&
+            !showSavedPopup &&
+            !showAddZoneDialog &&
+            !showPhotoSourceDialog &&
+            !showTutorial &&
+            !showTutorialCompleteDialog
+    ) {
+        showConfirmCancelPopup = true
+    }
 
     val tutorialSteps = listOf(
         "Enter or speak an item's name here. Tap anywhere to continue." to nameFieldBounds,
