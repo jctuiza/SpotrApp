@@ -9,6 +9,7 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.compose.BackHandler
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -90,6 +91,16 @@ fun EditItemScreen(
     var showSavedPopup by remember { mutableStateOf(false) }
     var showConfirmCancelPopup by remember { mutableStateOf(false) }
     var showAddZoneDialog by remember { mutableStateOf(false) }
+
+    BackHandler(
+        enabled = !showConfirmCancelPopup &&
+            !showConfirmEditPopup &&
+            !showSavedPopup &&
+            !showAddZoneDialog &&
+            !showPhotoSourceDialog
+    ) {
+        showConfirmCancelPopup = true
+    }
 
     var addingZoneFromItemScreen by remember { mutableStateOf(false) }
 
