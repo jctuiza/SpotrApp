@@ -25,6 +25,9 @@ interface ItemDao {
     @Query("UPDATE items SET isRetrieved = 1 WHERE id = :itemId AND isRetrieved = 0")
     suspend fun markRetrieved(itemId: Int): Int
 
+    @Query("UPDATE items SET notes = :notes WHERE id = :itemId AND isRetrieved = 0")
+    suspend fun updateNotes(itemId: Int, notes: String?): Int
+
     @Query(
         "SELECT * FROM items " +
                 "WHERE LOWER(name) = LOWER(:name) AND zoneId = :zoneId AND isRetrieved = 0 " +
