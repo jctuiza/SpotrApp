@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -68,6 +69,8 @@ import com.example.spotrapp.ui.theme.SpotrSecondary
 import com.example.spotrapp.ui.theme.SpotrWhite
 import com.example.spotrapp.viewmodel.ItemViewModel
 import com.example.spotrapp.viewmodel.ZoneViewModel
+import coil.compose.AsyncImage
+import java.io.File
 import java.util.Locale
 
 @Composable
@@ -374,7 +377,7 @@ fun AddItemScreen(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
 
-                // Item image
+                // Show the selected or captured photo immediately.
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -385,13 +388,21 @@ fun AddItemScreen(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-
-                    Icon(
-                        imageVector = Icons.Filled.Image,
-                        contentDescription = "Item Image",
-                        tint = SpotrPrimary,
-                        modifier = Modifier.size(180.dp)
-                    )
+                    if (!photoPath.isNullOrBlank() && File(photoPath).exists()) {
+                        AsyncImage(
+                            model = File(photoPath),
+                            contentDescription = "Selected item photo",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Filled.Image,
+                            contentDescription = "Item Image",
+                            tint = SpotrPrimary,
+                            modifier = Modifier.size(180.dp)
+                        )
+                    }
                 }
 
                 // Item name
@@ -894,7 +905,6 @@ fun AddItemScreen(
                 TutorialOverlay(
                     message = stepMessage,
                     highlightBounds = stepBounds,
-                    highlightCorrectionY = (-24).dp,
                     onDismiss = {
                         if (localTutorialStep < tutorialSteps.lastIndex) {
                             localTutorialStep++
