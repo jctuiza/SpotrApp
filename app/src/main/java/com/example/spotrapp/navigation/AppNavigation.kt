@@ -37,6 +37,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.spotrapp.data.repository.Resource
+import com.example.spotrapp.data.local.HistoryAction
 import com.example.spotrapp.ui.dashboard.DashboardScreen
 import com.example.spotrapp.ui.history.HistoryScreen
 import com.example.spotrapp.ui.onboarding.OnboardingScreen
@@ -153,7 +154,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     }
                 },
                 onScanClick = { navController.navigate(Routes.PUTAWAY) },
-                onItemClick = { itemId -> navController.navigate(Routes.itemDetails(itemId)) }
+                onItemClick = { itemId, action ->
+                    navController.navigate(Routes.itemDetails(itemId) + "?historyAction=${action.name}")
+                }
             )
         }
 
@@ -211,10 +214,20 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
 
         composable(
-            route = Routes.ITEM_DETAILS,
-            arguments = listOf(navArgument("itemId") { type = NavType.IntType })
+            route = Routes.ITEM_DETAILS + "?historyAction={historyAction}",
+            arguments = listOf(
+                navArgument("itemId") { type = NavType.IntType },
+                navArgument("historyAction") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
         ) { backStackEntry ->
             val itemId = backStackEntry.arguments?.getInt("itemId") ?: -1
+            val historyAction = backStackEntry.arguments?.getString("historyAction")
+                ?.let { actionName -> runCatching { HistoryAction.valueOf(actionName) }.getOrNull() }
+            val openedFromRetrieveHistory = historyAction == HistoryAction.RETRIEVED
             val itemViewModel: ItemViewModel = hiltViewModel()
             val itemState by itemViewModel.itemState.collectAsStateWithLifecycle()
             val item = (itemState as? Resource.Success)?.data?.find { it.id == itemId }
@@ -243,43 +256,18 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
-                else -> Dialog(
-                    onDismissRequest = { navController.popBackStack() }
-                ) {
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color.White,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .border(1.dp, com.example.spotrapp.ui.theme.SpotrSecondary, RoundedCornerShape(12.dp))
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                else -> {
+                    if (openedFromRetrieveHistory) {
+                        com.example.spotrapp.ui.common.StatusPopup(
+                            message = "This item is no longer in your active inventory.",
+                            onDismiss = { navController.popBackStack() }
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "Item no longer available",
-                                color = com.example.spotrapp.ui.theme.SpotrPrimary,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                text = "This item is no longer in your active inventory.",
-                                color = Color.DarkGray,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            Spacer(Modifier.height(24.dp))
-                            Button(
-                                onClick = { navController.popBackStack() },
-                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = com.example.spotrapp.ui.theme.SpotrPrimary),
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Text("Back", color = Color.White, fontWeight = FontWeight.Bold)
-                            }
+                            Text("Item not found.")
                         }
                     }
                 }
