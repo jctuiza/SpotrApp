@@ -56,6 +56,11 @@ class ItemRepository @Inject constructor(
     fun retrieveItem(item: ItemEntity): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
         try {
+            val changed = itemDao.markRetrieved(item.id)
+            if (changed == 0) {
+                emit(Resource.Error("This item has already been retrieved or is no longer available."))
+                return@flow
+            }
             historyRepository.log(HistoryAction.RETRIEVED, item.name, item.id)
             emit(Resource.Success(Unit))
         } catch (e: Exception) {
