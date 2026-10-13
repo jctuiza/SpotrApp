@@ -108,6 +108,7 @@ fun EditItemScreen(
         if (uri != null) {
             copyGalleryImageToAppStorage(context, uri)?.let { editedImagePath = it }
         }
+        showPhotoSourceDialog = false
     }
 
     val zones = (zoneState as? Resource.Success)?.data ?: emptyList()
