@@ -28,5 +28,6 @@ data class ItemEntity(
     val zoneId: Int?,
     val dateAdded: Long = System.currentTimeMillis(),
     val notes: String? = null,
-    val imagePath: String? = null
+    val imagePath: String? = null,
+    val isRetrieved: Boolean = false
 )
