@@ -88,6 +88,8 @@ fun SearchScreen(
         }
     }
 
+    val voiceCapture = rememberVoiceCapture { recognizedText -> runSearch(recognizedText) }
+
     // Apply a voice result exactly once when it arrives.
     LaunchedEffect(incomingVoiceQuery) {
         if (!incomingVoiceQuery.isNullOrBlank()) {
@@ -191,7 +193,7 @@ fun SearchScreen(
                         onClick = {
 
                             if (searchText.isEmpty()) {
-                                onVoiceSearchClick()
+                                voiceCapture.launch()
                             } else {
                                 searchText = ""
                                 hasSearched = false
