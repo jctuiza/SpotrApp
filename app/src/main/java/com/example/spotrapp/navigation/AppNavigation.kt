@@ -9,6 +9,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
@@ -207,8 +216,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             val itemState by itemViewModel.itemState.collectAsStateWithLifecycle()
             val item = (itemState as? Resource.Success)?.data?.find { it.id == itemId }
 
-            if (item != null) {
-                ItemDetailsScreen(
+            when {
+                item != null -> ItemDetailsScreen(
                     item = item,
                     onBack = { navController.popBackStack() },
                     onEditClick = { selectedItem ->
@@ -227,6 +236,20 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                         }
                     }
                 )
+                itemState is Resource.Loading -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) { CircularProgressIndicator() }
+                else -> Column(
+                    modifier = Modifier.fillMaxSize().padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+                ) {
+                    Text("This item is no longer in your active inventory.")
+                    Button(onClick = { navController.popBackStack() }) {
+                        Text("Back")
+                    }
+                }
             }
         }
 
