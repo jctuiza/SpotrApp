@@ -4,6 +4,5 @@
         <item name="android:windowSplashScreenBackground">#102A43</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_spotr_logo</item>
         <item name="android:windowSplashScreenIconBackgroundColor">#102A43</item>
-        <item name="postSplashScreenTheme">@style/Theme.SpotrApp</item>
     </style>
 </resources>
