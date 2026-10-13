@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -37,10 +39,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 private data class PhotoMetadata(
     val fileName: String,
     val sizeLabel: String,
@@ -116,6 +115,7 @@ fun ItemDetailsBottomSheet(
                             end = 32.dp,
                             bottom = 32.dp
                         )
+                        .verticalScroll(rememberScrollState())
                 ) {
                     DetailSection(
                         label = "Item Name",
