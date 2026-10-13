@@ -1,6 +1,7 @@
 package com.example.spotrapp.ui.putaway
 
 import android.Manifest
+import android.net.Uri
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.speech.RecognitionListener
@@ -9,6 +10,7 @@ import android.speech.SpeechRecognizer
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -100,6 +102,8 @@ fun AddItemScreen(
 
     // Static text field state
     var itemName by remember { mutableStateOf("") }
+    var selectedPhotoPath by remember(photoPath) { mutableStateOf(photoPath) }
+    var showPhotoSourceDialog by remember { mutableStateOf(false) }
 
     // zone select state
     var selectedZone by remember { mutableStateOf("") }
@@ -134,6 +138,20 @@ fun AddItemScreen(
     )
 
     val context = LocalContext.current
+    val cameraCapture = rememberCameraCapture { path ->
+        selectedPhotoPath = path
+        showPhotoSourceDialog = false
+    }
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            copyGalleryImageToAppStorage(context, uri)?.let { path ->
+                selectedPhotoPath = path
+            }
+        }
+        showPhotoSourceDialog = false
+    }
 
     val speechRecognizer = remember {
         if (SpeechRecognizer.isRecognitionAvailable(context)) {
@@ -382,15 +400,16 @@ fun AddItemScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(230.dp)
+                        .clickable { showPhotoSourceDialog = true }
                         .background(
                             color = SpotrSecondary,
                             shape = RoundedCornerShape(10.dp)
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (!photoPath.isNullOrBlank() && File(photoPath).exists()) {
+                    if (!selectedPhotoPath.isNullOrBlank() && File(selectedPhotoPath!!).exists()) {
                         AsyncImage(
-                            model = File(photoPath),
+                            model = File(selectedPhotoPath!!),
                             contentDescription = "Selected item photo",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
@@ -398,7 +417,7 @@ fun AddItemScreen(
                     } else {
                         Icon(
                             imageVector = Icons.Filled.Image,
-                            contentDescription = "Item Image",
+                            contentDescription = "Tap to add or change item photo",
                             tint = SpotrPrimary,
                             modifier = Modifier.size(180.dp)
                         )
@@ -801,6 +820,19 @@ fun AddItemScreen(
         }
 
         // Add Zone popup
+        if (showPhotoSourceDialog) {
+            PhotoSourceDialog(
+                onDismiss = { showPhotoSourceDialog = false },
+                onTakePhoto = {
+                    showPhotoSourceDialog = false
+                    cameraCapture.launch()
+                },
+                onChooseGallery = {
+                    galleryLauncher.launch("image/*")
+                }
+            )
+        }
+
         if (showAddZoneDialog) {
 
             AddZoneDialog(
@@ -844,7 +876,7 @@ fun AddItemScreen(
                                 name = itemName.trim(),
                                 type = itemName.trim(),
                                 zoneId = selectedZoneEntity.id,
-                                imagePath = photoPath,
+                                imagePath = selectedPhotoPath,
                                 notes = null
                             )
                         )
