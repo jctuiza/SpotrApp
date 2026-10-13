@@ -19,7 +19,15 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import com.example.spotrapp.ui.theme.SpotrPrimary
 import com.example.spotrapp.ui.theme.SpotrSecondary
 
@@ -97,47 +106,54 @@ fun StatusPopup(
     icon: ImageVector = Icons.Filled.Check,
     onDismiss: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0x88000000)),
-        contentAlignment = Alignment.Center
+    var visible by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        delay(1700)
+        visible = false
+        delay(250)
+        onDismiss()
+    }
+
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column(
+        Box(
             modifier = Modifier
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
-                .padding(30.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .background(Color(0x88000000)),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
+            Column(
                 modifier = Modifier
-                    .size(60.dp)
-                    .background(SpotrSecondary, shape = RoundedCornerShape(50.dp)),
-                contentAlignment = Alignment.Center
+                    .background(Color.White, shape = RoundedCornerShape(16.dp))
+                    .padding(30.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = SpotrPrimary
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .background(SpotrSecondary, shape = RoundedCornerShape(50.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = SpotrPrimary
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                Text(
+                    text = message,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
                 )
-            }
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            Text(
-                text = message,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button(
-                onClick = onDismiss,
-                colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary)
-            ) {
-                Text(text = buttonLabel, color = Color.White)
             }
         }
     }

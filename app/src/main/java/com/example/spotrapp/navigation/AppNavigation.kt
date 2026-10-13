@@ -9,15 +9,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
@@ -232,14 +243,44 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
-                else -> Column(
-                    modifier = Modifier.fillMaxSize().padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+                else -> Dialog(
+                    onDismissRequest = { navController.popBackStack() }
                 ) {
-                    Text("This item is no longer in your active inventory.")
-                    Button(onClick = { navController.popBackStack() }) {
-                        Text("Back")
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color.White,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .border(1.dp, com.example.spotrapp.ui.theme.SpotrSecondary, RoundedCornerShape(12.dp))
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Item no longer available",
+                                color = com.example.spotrapp.ui.theme.SpotrPrimary,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                text = "This item is no longer in your active inventory.",
+                                color = Color.DarkGray,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(Modifier.height(24.dp))
+                            Button(
+                                onClick = { navController.popBackStack() },
+                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = com.example.spotrapp.ui.theme.SpotrPrimary),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text("Back", color = Color.White, fontWeight = FontWeight.Bold)
+                            }
+                        }
                     }
                 }
             }
