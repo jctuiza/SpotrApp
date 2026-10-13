@@ -30,6 +30,9 @@ import coil.compose.AsyncImage
 import com.example.spotrapp.data.local.ItemEntity
 import com.example.spotrapp.ui.theme.SpotrSecondary
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,7 +91,8 @@ fun ItemDetailsBottomSheet(
 
                     DetailSection(
                         label = "Date Added",
-                        value = item.dateAdded.toString()
+                        value = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+                            .format(Date(item.dateAdded))
                     )
                 }
             }
