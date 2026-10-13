@@ -264,11 +264,24 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                             onDismiss = { navController.popBackStack() }
                         )
                     } else {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
                         ) {
                             Text("Item not found.")
+                            Spacer(Modifier.height(16.dp))
+                            Button(
+                                onClick = { navController.popBackStack() },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = com.example.spotrapp.ui.theme.SpotrPrimary
+                                ),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text("Back", color = Color.White)
+                            }
                         }
                     }
                 }
