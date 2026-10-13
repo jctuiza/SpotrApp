@@ -62,6 +62,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.spotrapp.data.local.ItemEntity
 import com.example.spotrapp.data.repository.Resource
+import com.example.spotrapp.ui.common.LoadingIndicator
 import com.example.spotrapp.ui.common.ConfirmationPopup
 import com.example.spotrapp.ui.common.OtherZoneButton
 import com.example.spotrapp.ui.common.ScreenHeader
@@ -1025,5 +1026,9 @@ fun AddItemScreen(
                 }
             }
         }
+        if (actionState is Resource.Loading) {
+            LoadingIndicator(message = "Saving item...")
+        }
+
     }
 }
