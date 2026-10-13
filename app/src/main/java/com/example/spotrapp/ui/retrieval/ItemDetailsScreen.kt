@@ -41,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.spotrapp.data.local.ItemEntity
 import com.example.spotrapp.data.repository.Resource
+import com.example.spotrapp.ui.common.LoadingIndicator
 import com.example.spotrapp.ui.common.ConfirmationPopup
 import com.example.spotrapp.ui.common.ScreenHeader
 import com.example.spotrapp.ui.common.StatusPopup
@@ -434,5 +435,9 @@ private fun DetailField(
         Text(
             text = value
         )
+        if (actionState is Resource.Loading) {
+            LoadingIndicator(message = "Updating item...")
+        }
+
     }
 }
