@@ -1,6 +1,5 @@
 package com.example.spotrapp.ui.putaway
 
-import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -113,19 +112,5 @@ fun CameraScanScreen(
                 }
             }
         }
-    }
-}
-
-private fun copyGalleryImageToAppStorage(context: Context, uri: Uri): String? {
-    return try {
-        val photoDir = java.io.File(context.getExternalFilesDir(null), "item_photos")
-            .apply { mkdirs() }
-        val file = java.io.File(photoDir, "GALLERY_${System.currentTimeMillis()}.jpg")
-        context.contentResolver.openInputStream(uri)?.use { input ->
-            file.outputStream().use { output -> input.copyTo(output) }
-        } ?: return null
-        file.absolutePath
-    } catch (_: Exception) {
-        null
     }
 }
