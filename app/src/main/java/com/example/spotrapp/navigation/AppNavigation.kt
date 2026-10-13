@@ -150,7 +150,10 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             CameraScanScreen(
                 onBackClick = { navController.popBackStack() },
                 onPhotoCaptured = { photoPath ->
-                    navController.navigate(Routes.addItem(Uri.encode(photoPath)))
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("newItemPhotoPath", photoPath)
+                    navController.navigate(Routes.addItem())
                 },
                 showTutorial = activeTutorialStep == Routes.PUTAWAY,
                 onDismissTutorial = {
@@ -170,8 +173,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 }
             )
         ) { backStackEntry ->
-            val encodedPhotoPath = backStackEntry.arguments?.getString("photoPath")
-            val photoPath = encodedPhotoPath?.let { Uri.decode(it) }
+            val photoPath = remember(backStackEntry) {
+                navController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.remove<String>("newItemPhotoPath")
+            }
 
             AddItemScreen(
                 onBack = { navController.popBackStack() },
