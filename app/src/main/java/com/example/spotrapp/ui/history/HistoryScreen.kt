@@ -42,7 +42,7 @@ import androidx.compose.ui.platform.LocalLocale
 fun HistoryScreen(
     onHomeClick: () -> Unit,
     onScanClick: () -> Unit,
-    onItemClick: (Int) -> Unit,
+    onItemClick: (Int, HistoryAction) -> Unit,
     historyViewModel: HistoryViewModel = hiltViewModel()
 ) {
     val historyState by historyViewModel.historyState.collectAsStateWithLifecycle()
@@ -126,7 +126,7 @@ fun HistoryScreen(
                                 HistoryItemRow(
                                     entry = entry,
                                     onClick = {
-                                        entry.itemId?.let { onItemClick(it) }
+                                        entry.itemId?.let { onItemClick(it, entry.action) }
                                     }
                                 )
                             }
