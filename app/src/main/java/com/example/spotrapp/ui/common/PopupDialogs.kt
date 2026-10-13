@@ -57,14 +57,13 @@ fun ConfirmationPopup(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth(0.84f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
-                .padding(24.dp),
+                .padding(30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
                 modifier = Modifier
-                    .size(52.dp)
+                    .size(60.dp)
                     .background(SpotrSecondary, shape = RoundedCornerShape(50.dp)),
                 contentAlignment = Alignment.Center
             ) {
@@ -131,13 +130,14 @@ fun StatusPopup(
         ) {
             Column(
                 modifier = Modifier
+                    .fillMaxWidth(0.84f)
                     .background(Color.White, shape = RoundedCornerShape(16.dp))
-                    .padding(30.dp),
+                    .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(
                     modifier = Modifier
-                        .size(60.dp)
+                        .size(52.dp)
                         .background(SpotrSecondary, shape = RoundedCornerShape(50.dp)),
                     contentAlignment = Alignment.Center
                 ) {
