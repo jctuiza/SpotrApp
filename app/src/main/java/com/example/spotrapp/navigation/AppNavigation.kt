@@ -9,6 +9,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
@@ -25,7 +34,6 @@ import com.example.spotrapp.ui.putaway.CameraScanScreen
 import com.example.spotrapp.ui.retrieval.EditItemScreen
 import com.example.spotrapp.ui.retrieval.ItemDetailsScreen
 import com.example.spotrapp.ui.search.SearchScreen
-import com.example.spotrapp.ui.search.VoiceSearchScreen
 import com.example.spotrapp.viewmodel.ItemViewModel
 
 @Composable
@@ -93,8 +101,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     activeTutorialStep = Routes.DASHBOARD
                 },
                 onDismissTutorial = {
-                    activeTutorialStep = Routes.PUTAWAY
-                    navController.navigate(Routes.PUTAWAY)
+                    activeTutorialStep = Routes.ADD_ITEM
+                    navController.navigate(Routes.addItem())
                 },
                 onSearchClick = { navController.navigate(Routes.SEARCH) },
                 onHistoryClick = { navController.navigate(Routes.HISTORY) },
@@ -116,24 +124,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 },
                 onScanClick = { navController.navigate(Routes.PUTAWAY) },
                 onHistoryClick = { navController.navigate(Routes.HISTORY) },
-                onVoiceSearchClick = { navController.navigate(Routes.VOICE_SEARCH) },
+                onVoiceSearchClick = { },
                 onItemClick = { item -> navController.navigate(Routes.itemDetails(item.id)) },
                 incomingVoiceQuery = voiceQuery.value,
                 onVoiceQueryConsumed = {
                     backStackEntry.savedStateHandle["voiceQuery"] = null
-                }
-            )
-        }
-
-        composable(Routes.VOICE_SEARCH) {
-            VoiceSearchScreen(
-                onBackClick = { navController.popBackStack() },
-                onResult = { recognizedText ->
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        "voiceQuery",
-                        recognizedText
-                    )
-                    navController.popBackStack()
                 }
             )
         }
@@ -207,8 +202,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             val itemState by itemViewModel.itemState.collectAsStateWithLifecycle()
             val item = (itemState as? Resource.Success)?.data?.find { it.id == itemId }
 
-            if (item != null) {
-                ItemDetailsScreen(
+            when {
+                item != null -> ItemDetailsScreen(
                     item = item,
                     onBack = { navController.popBackStack() },
                     onEditClick = { selectedItem ->
@@ -227,6 +222,20 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                         }
                     }
                 )
+                itemState is Resource.Loading -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) { CircularProgressIndicator() }
+                else -> Column(
+                    modifier = Modifier.fillMaxSize().padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+                ) {
+                    Text("This item is no longer in your active inventory.")
+                    Button(onClick = { navController.popBackStack() }) {
+                        Text("Back")
+                    }
+                }
             }
         }
 
