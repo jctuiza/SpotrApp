@@ -56,6 +56,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.spotrapp.data.local.ItemEntity
 import com.example.spotrapp.data.repository.Resource
+import com.example.spotrapp.ui.common.LoadingIndicator
 import com.example.spotrapp.ui.common.ConfirmationPopup
 import com.example.spotrapp.ui.putaway.rememberCameraCapture
 import com.example.spotrapp.ui.putaway.PhotoSourceDialog
@@ -881,5 +882,9 @@ fun EditItemScreen(
                 }
             )
         }
+        if (actionState is Resource.Loading) {
+            LoadingIndicator(message = "Saving changes...")
+        }
+
     }
 }
