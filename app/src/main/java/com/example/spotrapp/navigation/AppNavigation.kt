@@ -34,7 +34,6 @@ import com.example.spotrapp.ui.putaway.CameraScanScreen
 import com.example.spotrapp.ui.retrieval.EditItemScreen
 import com.example.spotrapp.ui.retrieval.ItemDetailsScreen
 import com.example.spotrapp.ui.search.SearchScreen
-import com.example.spotrapp.ui.search.VoiceSearchScreen
 import com.example.spotrapp.viewmodel.ItemViewModel
 
 @Composable
@@ -125,24 +124,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 },
                 onScanClick = { navController.navigate(Routes.PUTAWAY) },
                 onHistoryClick = { navController.navigate(Routes.HISTORY) },
-                onVoiceSearchClick = { navController.navigate(Routes.VOICE_SEARCH) },
+                onVoiceSearchClick = { },
                 onItemClick = { item -> navController.navigate(Routes.itemDetails(item.id)) },
                 incomingVoiceQuery = voiceQuery.value,
                 onVoiceQueryConsumed = {
                     backStackEntry.savedStateHandle["voiceQuery"] = null
-                }
-            )
-        }
-
-        composable(Routes.VOICE_SEARCH) {
-            VoiceSearchScreen(
-                onBackClick = { navController.popBackStack() },
-                onResult = { recognizedText ->
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        "voiceQuery",
-                        recognizedText
-                    )
-                    navController.popBackStack()
                 }
             )
         }
