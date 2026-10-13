@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -56,13 +57,14 @@ fun ConfirmationPopup(
     ) {
         Column(
             modifier = Modifier
+                .fillMaxWidth(0.84f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
-                .padding(30.dp),
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
                 modifier = Modifier
-                    .size(60.dp)
+                    .size(52.dp)
                     .background(SpotrSecondary, shape = RoundedCornerShape(50.dp)),
                 contentAlignment = Alignment.Center
             ) {
