@@ -92,6 +92,13 @@ fun EditItemScreen(
     var showConfirmCancelPopup by remember { mutableStateOf(false) }
     var showAddZoneDialog by remember { mutableStateOf(false) }
 
+
+    var addingZoneFromItemScreen by remember { mutableStateOf(false) }
+
+    var itemName by remember { mutableStateOf(item.name) }
+    var editedImagePath by remember(item.id) { mutableStateOf(item.imagePath) }
+    var showPhotoSourceDialog by remember { mutableStateOf(false) }
+
     BackHandler(
         enabled = !showConfirmCancelPopup &&
             !showConfirmEditPopup &&
@@ -101,12 +108,6 @@ fun EditItemScreen(
     ) {
         showConfirmCancelPopup = true
     }
-
-    var addingZoneFromItemScreen by remember { mutableStateOf(false) }
-
-    var itemName by remember { mutableStateOf(item.name) }
-    var editedImagePath by remember(item.id) { mutableStateOf(item.imagePath) }
-    var showPhotoSourceDialog by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val cameraCapture = rememberCameraCapture { path ->
