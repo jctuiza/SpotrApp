@@ -529,14 +529,6 @@ private fun DeleteZoneDialog(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Button(
-                        onClick = onDismiss,
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text("Cancel", color = SpotrPrimary, fontWeight = FontWeight.Bold)
-                    }
-                    Button(
                         onClick = onRename,
                         modifier = Modifier.weight(1f).height(48.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
@@ -551,6 +543,22 @@ private fun DeleteZoneDialog(
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text("Delete", color = SpotrWhite, fontWeight = FontWeight.Bold)
+                    }
+                }
+
+                Spacer(Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        onClick = onDismiss,
+                        modifier = Modifier.fillMaxWidth(0.5f).height(48.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Cancel", color = SpotrPrimary, fontWeight = FontWeight.Bold)
                     }
                 }
             }
