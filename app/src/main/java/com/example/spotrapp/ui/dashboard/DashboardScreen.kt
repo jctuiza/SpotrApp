@@ -247,12 +247,12 @@ fun DashboardScreen(
 
                     
                     if (itemState is Resource.Loading) {
-
                         Box(
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        
+                            modifier = Modifier.weight(1f).fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = SpotrPrimary)
+                        }
                     } else if (zones.isEmpty()) {
 
                         DashboardEmptyState(
