@@ -15,6 +15,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Dialog
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -28,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,8 +49,11 @@ import com.example.spotrapp.ui.theme.SpotrSecondary
 import com.example.spotrapp.viewmodel.ItemViewModel
 import com.example.spotrapp.viewmodel.ZoneViewModel
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-private enum class PendingAction { NONE, RETRIEVE, DELETE }
+private enum class PendingAction { NONE, RETRIEVE, DELETE, NOTES }
 
 @Composable
 fun ItemDetailsScreen(
@@ -63,6 +71,9 @@ fun ItemDetailsScreen(
     var showRetrievedPopup by remember { mutableStateOf(false) }
     var showConfirmDeletePopup by remember { mutableStateOf(false) }
     var showDeletedPopup by remember { mutableStateOf(false) }
+    var showEditNotesDialog by remember { mutableStateOf(false) }
+    var showNotesSavedPopup by remember { mutableStateOf(false) }
+    var notesDraft by remember(item.id, item.notes) { mutableStateOf(item.notes.orEmpty()) }
     var pendingAction by remember { mutableStateOf(PendingAction.NONE) }
     
     val zoneName = when (val state = zoneState) {
@@ -81,6 +92,10 @@ fun ItemDetailsScreen(
                 when (pendingAction) {
                     PendingAction.RETRIEVE -> showRetrievedPopup = true
                     PendingAction.DELETE -> showDeletedPopup = true
+                    PendingAction.NOTES -> {
+                        showEditNotesDialog = false
+                        showNotesSavedPopup = true
+                    }
                     PendingAction.NONE -> Unit
                 }
                 pendingAction = PendingAction.NONE
@@ -162,15 +177,37 @@ fun ItemDetailsScreen(
 
                     DetailField(
                         label = "Date Added",
-                        value = item.dateAdded.toString()
+                        value = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+                            .format(Date(item.dateAdded))
                     )
 
                     Spacer(modifier = Modifier.height(15.dp))
 
-                    DetailField(
-                        label = "Notes",
-                        value = item.notes?.ifBlank { "-" } ?: "-"
-                    )
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Notes",
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(
+                                onClick = {
+                                    notesDraft = item.notes.orEmpty()
+                                    showEditNotesDialog = true
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Edit,
+                                    contentDescription = "Edit notes",
+                                    tint = SpotrPrimary
+                                )
+                            }
+                        }
+                        Text(item.notes?.ifBlank { "-" } ?: "-")
+                    }
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -278,6 +315,78 @@ fun ItemDetailsScreen(
                 onCancel = {
                     showConfirmDeletePopup = false
                 }
+            )
+        }
+
+
+        if (showEditNotesDialog) {
+            Dialog(onDismissRequest = { showEditNotesDialog = false }) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color.White,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Edit Notes",
+                            color = SpotrPrimary,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        OutlinedTextField(
+                            value = notesDraft,
+                            onValueChange = { notesDraft = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = { Text("Enter notes for this item") },
+                            minLines = 3,
+                            maxLines = 6,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = SpotrPrimary,
+                                focusedLabelColor = SpotrPrimary,
+                                cursorColor = SpotrPrimary
+                            )
+                        )
+                        Spacer(Modifier.height(20.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = { showEditNotesDialog = false },
+                                modifier = Modifier.weight(1f).height(48.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary)
+                            ) {
+                                Text("Cancel", color = SpotrPrimary)
+                            }
+                            Button(
+                                onClick = {
+                                    pendingAction = PendingAction.NOTES
+                                    itemViewModel.updateItem(
+                                        item.copy(notes = notesDraft.trim().ifBlank { null })
+                                    )
+                                },
+                                modifier = Modifier.weight(1f).height(48.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary)
+                            ) {
+                                Text("Save", color = Color.White)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (showNotesSavedPopup) {
+            StatusPopup(
+                message = "Notes saved",
+                onDismiss = { showNotesSavedPopup = false }
             )
         }
 
