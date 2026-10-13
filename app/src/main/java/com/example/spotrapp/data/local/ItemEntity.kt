@@ -1,5 +1,6 @@
 package com.example.spotrapp.data.local
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -29,5 +30,6 @@ data class ItemEntity(
     val dateAdded: Long = System.currentTimeMillis(),
     val notes: String? = null,
     val imagePath: String? = null,
+    @ColumnInfo(defaultValue = "0")
     val isRetrieved: Boolean = false
 )
