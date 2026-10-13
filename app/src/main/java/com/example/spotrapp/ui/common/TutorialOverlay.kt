@@ -1,6 +1,6 @@
 package com.example.spotrapp.ui.common
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -9,25 +9,32 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.spotrapp.ui.theme.SpotrSecondary
-import kotlin.math.roundToInt
+import kotlin.math.min
 
-// reusable per tutorial
 @Composable
 fun TutorialOverlay(
     message: String,
@@ -44,29 +51,53 @@ fun TutorialOverlay(
     highlightCorrectionY: Dp = 0.dp
 ) {
     val density = LocalDensity.current
+    val fallbackRadius = with(density) { 10.dp.toPx() }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.7f))
             .clickable(onClick = onDismiss)
     ) {
+        Canvas(
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    compositingStrategy = CompositingStrategy.Offscreen
+                }
+                .drawWithCache {
+                    onDrawBehind {
+                        drawRect(Color.Black.copy(alpha = 0.72f))
+                        val bounds = highlightBounds
+                        if (bounds != null) {
+                            val left = bounds.left + highlightCorrectionX.toPx()
+                            val top = bounds.top + highlightCorrectionY.toPx()
+                            val width = bounds.width
+                            val height = bounds.height
+                            val radius = if (highlightShape == CircleShape) {
+                                min(width, height) / 2f
+                            } else {
+                                fallbackRadius
+                            }
+                            drawRoundRect(
+                                color = Color.Transparent,
+                                topLeft = Offset(left, top),
+                                size = Size(width, height),
+                                cornerRadius = CornerRadius(radius, radius),
+                                blendMode = BlendMode.Clear
+                            )
+                        }
+                    }
+                }
+        )
+
         if (highlightBounds != null) {
             with(density) {
                 Box(
                     modifier = Modifier
-                        .offset {
-                            IntOffset(
-                                (
-                                    highlightBounds.left +
-                                        highlightCorrectionX.toPx()
-                                ).roundToInt(),
-                                (
-                                    highlightBounds.top +
-                                        highlightCorrectionY.toPx()
-                                ).roundToInt()
-                            )
-                        }
+                        .offset(
+                            x = (highlightBounds.left + highlightCorrectionX.toPx()).toDp(),
+                            y = (highlightBounds.top + highlightCorrectionY.toPx()).toDp()
+                        )
                         .size(
                             width = highlightBounds.width.toDp(),
                             height = highlightBounds.height.toDp()
