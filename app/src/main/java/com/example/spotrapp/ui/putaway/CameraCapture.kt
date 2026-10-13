@@ -151,6 +151,7 @@ private fun createPhotoUri(
 }
 @Composable
 fun PhotoSourceDialog(
+    title: String = "Change item photo",
     onDismiss: () -> Unit,
     onTakePhoto: () -> Unit,
     onChooseGallery: () -> Unit
@@ -167,7 +168,7 @@ fun PhotoSourceDialog(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Change item photo",
+                    text = title,
                     color = SpotrPrimary,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
