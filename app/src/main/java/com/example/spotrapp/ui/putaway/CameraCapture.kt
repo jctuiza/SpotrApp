@@ -17,8 +17,10 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,6 +55,8 @@ fun rememberCameraCapture(
     var pendingPhotoFile by remember {
         mutableStateOf<File?>(null)
     }
+    var showPermissionRationale by remember { mutableStateOf(false) }
+    var showPermissionDenied by remember { mutableStateOf(false) }
 
     val takePictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
@@ -73,14 +77,11 @@ fun rememberCameraCapture(
 
         if (granted) {
             val (file, uri) = createPhotoUri(context)
-
             pendingPhotoFile = file
-
             takePictureLauncher.launch(uri)
+        } else {
+            showPermissionDenied = true
         }
-
-        // if denied: nothing happens for now
-        // caller can use hasPermission if needed
     }
 
     val hasPermission =
@@ -93,21 +94,62 @@ fun rememberCameraCapture(
         hasPermission = hasPermission,
         launch = {
             if (hasPermission) {
-
                 val (file, uri) = createPhotoUri(context)
-
                 pendingPhotoFile = file
-
                 takePictureLauncher.launch(uri)
-
             } else {
-
-                permissionLauncher.launch(
-                    Manifest.permission.CAMERA
-                )
+                showPermissionRationale = true
             }
         }
     )
+
+    if (showPermissionRationale) {
+        AlertDialog(
+            onDismissRequest = { showPermissionRationale = false },
+            title = { Text("Allow camera access?", color = SpotrPrimary, fontWeight = FontWeight.Bold) },
+            text = {
+                Text(
+                    "SpotrApp only requests camera access when you choose Take Photo. The camera is used to capture an item photo that you choose to save with that item.",
+                    color = Color.DarkGray
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showPermissionRationale = false
+                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                ) {
+                    Text("Continue", color = SpotrPrimary)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPermissionRationale = false }) {
+                    Text("Not now", color = SpotrPrimary)
+                }
+            },
+            containerColor = Color.White
+        )
+    }
+
+    if (showPermissionDenied) {
+        AlertDialog(
+            onDismissRequest = { showPermissionDenied = false },
+            title = { Text("Camera permission denied", color = SpotrPrimary, fontWeight = FontWeight.Bold) },
+            text = {
+                Text(
+                    "Camera access was not granted. You can still choose a photo from your gallery, or allow camera access in your device settings.",
+                    color = Color.DarkGray
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { showPermissionDenied = false }) {
+                    Text("OK", color = SpotrPrimary)
+                }
+            },
+            containerColor = Color.White
+        )
+    }
 }
 
 data class CameraCaptureState(
