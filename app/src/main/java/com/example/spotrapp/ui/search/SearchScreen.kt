@@ -55,7 +55,6 @@ import com.example.spotrapp.ui.theme.SpotrTextBlack
 import com.example.spotrapp.ui.theme.SpotrWhite
 import com.example.spotrapp.viewmodel.HistoryViewModel
 import com.example.spotrapp.viewmodel.ItemViewModel
-import com.example.spotrapp.ui.search.rememberVoiceCapture
 
 @Composable
 fun SearchScreen(
@@ -73,8 +72,6 @@ fun SearchScreen(
     val recentSearches by historyViewModel.recentSearches.collectAsStateWithLifecycle()
     val items = (itemState as? Resource.Success)?.data ?: emptyList()
 
-    val voiceCapture = rememberVoiceCapture { recognizedText -> runSearch(recognizedText) }
-
     // search bar state
     var searchText by remember { mutableStateOf("") }
     var hasSearched by remember { mutableStateOf(false) }
@@ -90,6 +87,8 @@ fun SearchScreen(
             historyViewModel.logSearch(query)
         }
     }
+
+    val voiceCapture = rememberVoiceCapture { recognizedText -> runSearch(recognizedText) }
 
     // Apply a voice result exactly once when it arrives.
     LaunchedEffect(incomingVoiceQuery) {
