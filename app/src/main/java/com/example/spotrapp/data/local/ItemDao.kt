@@ -19,8 +19,11 @@ interface ItemDao {
     @Delete
     suspend fun delete(item: ItemEntity): Int
 
-    @Query("SELECT * FROM items ORDER BY id DESC")
+    @Query("SELECT * FROM items WHERE isRetrieved = 0 ORDER BY id DESC")
     fun getAllItems(): Flow<List<ItemEntity>>
+
+    @Query("UPDATE items SET isRetrieved = 1 WHERE id = :itemId AND isRetrieved = 0")
+    suspend fun markRetrieved(itemId: Int): Int
 
     @Query(
         "SELECT * FROM items " +
