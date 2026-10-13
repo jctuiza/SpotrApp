@@ -75,7 +75,7 @@ class ItemViewModel @Inject constructor(
             val trimmedName = item.name.trim()
             if (repository.isDuplicate(trimmedName, zoneId, item.id)) {
                 _actionState.value = Resource.Error(
-                    """ + trimmedName + "" already exists in this zone."
+                    "\"${trimmedName}\" already exists in this zone."
                 )
                 return@launch
             }
@@ -102,7 +102,7 @@ class ItemViewModel @Inject constructor(
         }
     }
 
-    // logs a retrieve event, item stays in the list
+    // Marks an item as retrieved; the active inventory flow removes it.
     fun retrieveItem(item: ItemEntity) {
         viewModelScope.launch {
             repository.retrieveItem(item).collect { resource ->
