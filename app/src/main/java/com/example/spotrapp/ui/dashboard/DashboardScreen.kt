@@ -394,11 +394,33 @@ fun DashboardScreen(
         }
 
         if (showMoveDialog && selectedItemIds.isNotEmpty()) {
-            AlertDialog(
-                onDismissRequest = { showMoveDialog = false },
-                title = { Text("Move selected items") },
-                text = {
-                    Column {
+            Dialog(onDismissRequest = { showMoveDialog = false }) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color.White,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .border(1.dp, SpotrSecondary, RoundedCornerShape(12.dp))
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Move selected items",
+                            color = SpotrPrimary,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = "Choose a zone for ${selectedItemIds.size} selected item(s).",
+                            color = Color.DarkGray,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(Modifier.height(16.dp))
                         zones.forEach { zone ->
                             Button(
                                 onClick = {
@@ -407,22 +429,28 @@ fun DashboardScreen(
                                     showMoveDialog = false
                                     Toast.makeText(context, "Items moved to " + zone.name + ".", Toast.LENGTH_SHORT).show()
                                 },
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary)
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp).height(48.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
+                                shape = RoundedCornerShape(8.dp)
                             ) {
-                                Text(zone.name, color = SpotrPrimary)
+                                Text(zone.name, color = SpotrPrimary, fontWeight = FontWeight.Bold)
                             }
                         }
+                        Spacer(Modifier.height(8.dp))
+                        Button(
+                            onClick = { showMoveDialog = false },
+                            modifier = Modifier.fillMaxWidth().height(48.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Cancel", color = SpotrWhite, fontWeight = FontWeight.Bold)
+                        }
                     }
-                },
-                confirmButton = {
-                    Button(onClick = { showMoveDialog = false }) { Text("Cancel") }
                 }
-            )
+            }
         }
 
-        
-        if (
+                if (
             showItemDetailsSheet &&
             selectedItem != null
         ) {
