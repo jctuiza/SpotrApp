@@ -13,6 +13,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -25,6 +29,8 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -49,11 +55,15 @@ fun TutorialOverlay(
     highlightCorrectionY: Dp = 0.dp
 ) {
     val density = LocalDensity.current
+    var overlayPositionInRoot by remember { mutableStateOf(Offset.Zero) }
     val fallbackRadius = with(density) { 10.dp.toPx() }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .onGloballyPositioned { coordinates ->
+                overlayPositionInRoot = coordinates.positionInRoot()
+            }
             .clickable(onClick = onDismiss)
     ) {
         Canvas(
@@ -66,8 +76,8 @@ fun TutorialOverlay(
                 drawRect(Color.Black.copy(alpha = 0.72f))
                 val bounds = highlightBounds
                 if (bounds != null) {
-                    val left = bounds.left + highlightCorrectionX.toPx()
-                    val top = bounds.top + highlightCorrectionY.toPx()
+                    val left = bounds.left - overlayPositionInRoot.x + highlightCorrectionX.toPx()
+                    val top = bounds.top - overlayPositionInRoot.y + highlightCorrectionY.toPx()
                     val width = bounds.width
                     val height = bounds.height
                     val radius = if (highlightShape == CircleShape) {
@@ -91,8 +101,8 @@ fun TutorialOverlay(
                 Box(
                     modifier = Modifier
                         .offset(
-                            x = (highlightBounds.left + highlightCorrectionX.toPx()).toDp(),
-                            y = (highlightBounds.top + highlightCorrectionY.toPx()).toDp()
+                            x = (highlightBounds.left - overlayPositionInRoot.x + highlightCorrectionX.toPx()).toDp(),
+                            y = (highlightBounds.top - overlayPositionInRoot.y + highlightCorrectionY.toPx()).toDp()
                         )
                         .size(
                             width = highlightBounds.width.toDp(),
