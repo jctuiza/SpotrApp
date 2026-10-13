@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -384,12 +385,18 @@ fun EditItemScreen(
                 ) {
 
                     if (!editedImagePath.isNullOrBlank() && File(editedImagePath!!).exists()) {
-
                         AsyncImage(
                             model = File(editedImagePath!!),
                             contentDescription = "Tap to change item photo",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Filled.Image,
+                            contentDescription = "Tap to add or change item photo",
+                            tint = SpotrPrimary,
+                            modifier = Modifier.size(180.dp)
                         )
                     }
                 }
