@@ -220,16 +220,24 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             )
         ) { backStackEntry ->
             val itemId = backStackEntry.arguments?.getInt("itemId") ?: -1
-            val historyAction = backStackEntry.arguments?.getString("historyAction")
-                ?.let { actionName -> runCatching { HistoryAction.valueOf(actionName) }.getOrNull() }
-            val openedFromRetrieveHistory = historyAction == HistoryAction.RETRIEVED
             val itemViewModel: ItemViewModel = hiltViewModel()
             val itemState by itemViewModel.itemState.collectAsStateWithLifecycle()
             val item = (itemState as? Resource.Success)?.data?.find { it.id == itemId }
+            var lastKnownItem by remember(backStackEntry) {
+                mutableStateOf<com.example.spotrapp.data.local.ItemEntity?>(null)
+            }
+
+            androidx.compose.runtime.LaunchedEffect(item) {
+                if (item != null) {
+                    lastKnownItem = item
+                }
+            }
+
+            val itemToDisplay = item ?: lastKnownItem
 
             when {
-                item != null -> ItemDetailsScreen(
-                    item = item,
+                itemToDisplay != null -> ItemDetailsScreen(
+                    item = itemToDisplay,
                     onBack = { navController.popBackStack() },
                     onEditClick = { selectedItem ->
                         navController.navigate(Routes.editItem(selectedItem.id))
@@ -252,33 +260,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
                 else -> {
-                    if (openedFromRetrieveHistory) {
-                        com.example.spotrapp.ui.common.StatusPopup(
-                            message = "This item is no longer in your active inventory.",
-                            icon = androidx.compose.material.icons.Icons.Filled.Warning,
-                            onDismiss = { navController.popBackStack() }
-                        )
-                    } else {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
-                        ) {
-                            Text("Item not found.")
-                            Spacer(Modifier.height(16.dp))
-                            Button(
-                                onClick = { navController.popBackStack() },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = com.example.spotrapp.ui.theme.SpotrPrimary
-                                ),
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Text("Back", color = Color.White)
-                            }
-                        }
-                    }
+                    com.example.spotrapp.ui.common.StatusPopup(
+                        message = "This item is no longer in your active inventory.",
+                        icon = androidx.compose.material.icons.Icons.Filled.Warning,
+                        onDismiss = { navController.popBackStack() }
+                    )
                 }
             }
         }
