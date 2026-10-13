@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Dialog
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
@@ -52,7 +51,8 @@ import com.example.spotrapp.viewmodel.ZoneViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
+import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.window.Dialog
 
 private enum class PendingAction { NONE, RETRIEVE, DELETE, NOTES }
 
@@ -179,7 +179,7 @@ fun ItemDetailsScreen(
 
                     DetailField(
                         label = "Date Added",
-                        value = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+                        value = SimpleDateFormat("MMM d, yyyy", LocalLocale.current.platformLocale)
                             .format(Date(item.dateAdded))
                     )
 

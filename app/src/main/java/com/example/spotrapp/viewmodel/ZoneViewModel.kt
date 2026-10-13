@@ -40,7 +40,7 @@ class ZoneViewModel @Inject constructor(
             }
 
             if (repository.isDuplicate(trimmedName)) {
-                _actionState.value = Resource.Error(""$trimmedName" already exists.")
+                _actionState.value = Resource.Error("'$trimmedName' already exists.")
                 return@launch
             }
 
@@ -58,7 +58,7 @@ class ZoneViewModel @Inject constructor(
                 return@launch
             }
             if (repository.isDuplicate(trimmedName, zone.id)) {
-                _actionState.value = Resource.Error(""$trimmedName" already exists.")
+                _actionState.value = Resource.Error("'$trimmedName' already exists.")
                 return@launch
             }
 
