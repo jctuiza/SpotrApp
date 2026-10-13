@@ -11,6 +11,7 @@ import android.speech.SpeechRecognizer
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,6 +56,8 @@ import com.example.spotrapp.data.local.ItemEntity
 import com.example.spotrapp.data.repository.Resource
 import com.example.spotrapp.ui.common.ConfirmationPopup
 import com.example.spotrapp.ui.putaway.rememberCameraCapture
+import com.example.spotrapp.ui.putaway.PhotoSourceDialog
+import com.example.spotrapp.ui.putaway.copyGalleryImageToAppStorage
 import com.example.spotrapp.ui.common.OtherZoneButton
 import com.example.spotrapp.ui.common.ScreenHeader
 import com.example.spotrapp.ui.common.StatusPopup
@@ -90,15 +93,19 @@ fun EditItemScreen(
     var addingZoneFromItemScreen by remember { mutableStateOf(false) }
 
     var itemName by remember { mutableStateOf(item.name) }
-    var editedImagePath by remember { mutableStateOf(item.imagePath) }
+    var editedImagePath by remember(item.id) { mutableStateOf(item.imagePath) }
+    var showPhotoSourceDialog by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-    val cameraCapture = rememberCameraCapture { path -> editedImagePath = path }
+    val cameraCapture = rememberCameraCapture { path ->
+        editedImagePath = path
+        showPhotoSourceDialog = false
+    }
     val galleryLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            copyGalleryImageForEdit(context, uri)?.let { editedImagePath = it }
+            copyGalleryImageToAppStorage(context, uri)?.let { editedImagePath = it }
         }
     }
 
@@ -116,8 +123,6 @@ fun EditItemScreen(
 
     var isListening by remember { mutableStateOf(false) }
     var voiceError by remember { mutableStateOf<String?>(null) }
-
-    val context = LocalContext.current
 
     val speechRecognizer = remember {
         if (SpeechRecognizer.isRecognitionAvailable(context)) {
@@ -370,6 +375,7 @@ fun EditItemScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(230.dp)
+                        .clickable { showPhotoSourceDialog = true }
                         .background(
                             color = SpotrSecondary,
                             shape = RoundedCornerShape(10.dp)
@@ -377,34 +383,14 @@ fun EditItemScreen(
                     contentAlignment = Alignment.Center
                 ) {
 
-                    if (editedImagePath != null) {
+                    if (!editedImagePath.isNullOrBlank() && File(editedImagePath!!).exists()) {
 
                         AsyncImage(
                             model = File(editedImagePath!!),
-                            contentDescription = item.name,
+                            contentDescription = "Tap to change item photo",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Button(
-                        onClick = { cameraCapture.launch() },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary)
-                    ) {
-                        Text("Camera", color = SpotrWhite)
-                    }
-                    Button(
-                        onClick = { galleryLauncher.launch("image/*") },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary)
-                    ) {
-                        Text("Gallery", color = SpotrPrimary)
                     }
                 }
 
@@ -776,6 +762,19 @@ fun EditItemScreen(
             }
         }
 
+        if (showPhotoSourceDialog) {
+            PhotoSourceDialog(
+                onDismiss = { showPhotoSourceDialog = false },
+                onTakePhoto = {
+                    showPhotoSourceDialog = false
+                    cameraCapture.launch()
+                },
+                onChooseGallery = {
+                    galleryLauncher.launch("image/*")
+                }
+            )
+        }
+
         if (showAddZoneDialog) {
 
             AddZoneDialog(
@@ -862,18 +861,5 @@ fun EditItemScreen(
                 }
             )
         }
-    }
-}
-
-private fun copyGalleryImageForEdit(context: android.content.Context, uri: Uri): String? {
-    return try {
-        val dir = java.io.File(context.getExternalFilesDir(null), "item_photos").apply { mkdirs() }
-        val file = java.io.File(dir, "EDIT_GALLERY_${System.currentTimeMillis()}.jpg")
-        context.contentResolver.openInputStream(uri)?.use { input ->
-            file.outputStream().use { output -> input.copyTo(output) }
-        } ?: return null
-        file.absolutePath
-    } catch (_: Exception) {
-        null
     }
 }
