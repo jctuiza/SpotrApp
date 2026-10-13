@@ -1,7 +1,6 @@
 package com.example.spotrapp.navigation
 
 import android.content.Context
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.getValue
@@ -10,26 +9,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.Surface
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
@@ -48,6 +41,7 @@ import com.example.spotrapp.ui.retrieval.EditItemScreen
 import com.example.spotrapp.ui.retrieval.ItemDetailsScreen
 import com.example.spotrapp.ui.search.SearchScreen
 import com.example.spotrapp.viewmodel.ItemViewModel
+import androidx.core.content.edit
 
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
@@ -82,9 +76,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(Routes.ONBOARDING) {
             OnboardingScreen(
                 onBoardingFinished = {
-                    onboardingPreferences.edit()
-                        .putBoolean("onboarding_completed", true)
-                        .apply()
+                    onboardingPreferences.edit {
+                        putBoolean("onboarding_completed", true)
+                    }
 
                     activeTutorialStep = null
                     navController.navigate(Routes.DASHBOARD) {
@@ -92,9 +86,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     }
                 },
                 onStartTutorial = {
-                    onboardingPreferences.edit()
-                        .putBoolean("onboarding_completed", true)
-                        .apply()
+                    onboardingPreferences.edit {
+                        putBoolean("onboarding_completed", true)
+                    }
 
                     activeTutorialStep = Routes.DASHBOARD
                     navController.navigate(Routes.DASHBOARD) {
