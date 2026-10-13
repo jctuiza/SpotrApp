@@ -42,6 +42,21 @@ class ItemRepository @Inject constructor(
         }
     }
 
+    fun updateNotes(item: ItemEntity, notes: String?): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            val changed = itemDao.updateNotes(item.id, notes)
+            if (changed == 0) {
+                emit(Resource.Error("This item is no longer available."))
+                return@flow
+            }
+            historyRepository.log(HistoryAction.EDITED, item.name, item.id)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Failed to update notes"))
+        }
+    }
+
     fun deleteItem(item: ItemEntity): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
         try {
