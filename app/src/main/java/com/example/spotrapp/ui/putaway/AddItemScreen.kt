@@ -822,6 +822,7 @@ fun AddItemScreen(
         // Add Zone popup
         if (showPhotoSourceDialog) {
             PhotoSourceDialog(
+                title = "Add item photo",
                 onDismiss = { showPhotoSourceDialog = false },
                 onTakePhoto = {
                     showPhotoSourceDialog = false
