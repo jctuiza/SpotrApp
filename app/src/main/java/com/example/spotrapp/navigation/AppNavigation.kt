@@ -101,8 +101,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     activeTutorialStep = Routes.DASHBOARD
                 },
                 onDismissTutorial = {
-                    activeTutorialStep = Routes.PUTAWAY
-                    navController.navigate(Routes.PUTAWAY)
+                    activeTutorialStep = Routes.ADD_ITEM
+                    navController.navigate(Routes.addItem())
                 },
                 onSearchClick = { navController.navigate(Routes.SEARCH) },
                 onHistoryClick = { navController.navigate(Routes.HISTORY) },
