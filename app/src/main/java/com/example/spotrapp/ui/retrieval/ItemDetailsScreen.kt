@@ -418,6 +418,10 @@ fun ItemDetailsScreen(
                 }
             )
         }
+
+        if (actionState is Resource.Loading) {
+            LoadingIndicator(message = "Updating item...")
+        }
     }
 }
 
@@ -435,9 +439,5 @@ private fun DetailField(
         Text(
             text = value
         )
-        if (actionState is Resource.Loading) {
-            LoadingIndicator(message = "Updating item...")
-        }
-
     }
 }
