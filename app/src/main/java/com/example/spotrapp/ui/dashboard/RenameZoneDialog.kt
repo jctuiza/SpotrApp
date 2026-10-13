@@ -1,5 +1,6 @@
 package com.example.spotrapp.ui.dashboard
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,7 +44,10 @@ fun RenameZoneDialog(
         Surface(
             shape = RoundedCornerShape(12.dp),
             color = Color.White,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .border(1.dp, SpotrSecondary, RoundedCornerShape(12.dp))
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
@@ -80,7 +84,8 @@ fun RenameZoneDialog(
                     Button(
                         onClick = onDismiss,
                         modifier = Modifier.weight(1f).height(48.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary)
+                        colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
+                        shape = RoundedCornerShape(8.dp)
                     ) {
                         Text("Cancel", color = SpotrPrimary, fontWeight = FontWeight.Bold)
                     }
@@ -91,7 +96,8 @@ fun RenameZoneDialog(
                             if (trimmed.isNotEmpty()) onConfirm(trimmed)
                         },
                         modifier = Modifier.weight(1f).height(48.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary)
+                        colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary),
+                        shape = RoundedCornerShape(8.dp)
                     ) {
                         Text("Save", color = SpotrWhite, fontWeight = FontWeight.Bold)
                     }
