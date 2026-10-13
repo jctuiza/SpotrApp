@@ -1,5 +1,8 @@
 package com.example.spotrapp.ui.dashboard
 
+import android.graphics.BitmapFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +37,16 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private data class PhotoMetadata(
+    val fileName: String,
+    val sizeLabel: String,
+    val photoDate: String,
+    val dimensions: String
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +54,34 @@ fun ItemDetailsBottomSheet(
     item: ItemEntity,
     onDismiss: () -> Unit
 ) {
+    val photoMetadata = produceState<PhotoMetadata?>(initialValue = null, key1 = item.imagePath) {
+        value = withContext(Dispatchers.IO) {
+            val photoFile = item.imagePath?.let(::File)
+            if (photoFile == null || !photoFile.isFile) {
+                null
+            } else {
+                val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                BitmapFactory.decodeFile(photoFile.absolutePath, options)
+                val bytes = photoFile.length()
+                val sizeLabel = if (bytes < 1024L * 1024L) {
+                    String.format(Locale.getDefault(), "%.1f KB", bytes / 1024.0)
+                } else {
+                    String.format(Locale.getDefault(), "%.2f MB", bytes / (1024.0 * 1024.0))
+                }
+                PhotoMetadata(
+                    fileName = photoFile.name,
+                    sizeLabel = sizeLabel,
+                    photoDate = SimpleDateFormat("MMM d, yyyy · h:mm a", Locale.getDefault())
+                        .format(Date(photoFile.lastModified())),
+                    dimensions = if (options.outWidth > 0 && options.outHeight > 0) {
+                        "${options.outWidth} × ${options.outHeight} px"
+                    } else {
+                        "Unavailable"
+                    }
+                )
+            }
+        }
+    }
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(
@@ -94,6 +136,33 @@ fun ItemDetailsBottomSheet(
                         value = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
                             .format(Date(item.dateAdded))
                     )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Text(
+                        text = "Photo Information",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    val metadata = photoMetadata.value
+                    if (metadata == null) {
+                        DetailSection(
+                            label = "Photo",
+                            value = if (item.imagePath.isNullOrBlank()) "No photo attached" else "Photo unavailable"
+                        )
+                    } else {
+                        DetailSection(label = "Filename", value = metadata.fileName)
+                        Spacer(modifier = Modifier.height(12.dp))
+                        DetailSection(label = "File Size", value = metadata.sizeLabel)
+                        Spacer(modifier = Modifier.height(12.dp))
+                        DetailSection(label = "Photo Date", value = metadata.photoDate)
+                        Spacer(modifier = Modifier.height(12.dp))
+                        DetailSection(label = "Image Dimensions", value = metadata.dimensions)
+                    }
                 }
             }
 
