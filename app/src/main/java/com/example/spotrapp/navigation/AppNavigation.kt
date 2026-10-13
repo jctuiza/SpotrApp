@@ -15,6 +15,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
@@ -262,13 +265,13 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.fillMaxWidth()
                             )
-                            androidx.compose.foundation.layout.Spacer(Modifier.padding(top = 8.dp))
+                            Spacer(Modifier.height(8.dp))
                             Text(
                                 text = "This item is no longer in your active inventory.",
                                 color = Color.DarkGray,
                                 modifier = Modifier.fillMaxWidth()
                             )
-                            androidx.compose.foundation.layout.Spacer(Modifier.padding(top = 24.dp))
+                            Spacer(Modifier.height(24.dp))
                             Button(
                                 onClick = { navController.popBackStack() },
                                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
