@@ -367,8 +367,9 @@ fun ItemDetailsScreen(
                             Button(
                                 onClick = {
                                     pendingAction = PendingAction.NOTES
-                                    itemViewModel.updateItem(
-                                        item.copy(notes = notesDraft.trim().ifBlank { null })
+                                    itemViewModel.updateNotes(
+                                        item,
+                                        notesDraft.trim().ifBlank { null }
                                     )
                                 },
                                 modifier = Modifier.weight(1f).height(48.dp),
