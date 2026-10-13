@@ -86,6 +86,14 @@ class ItemViewModel @Inject constructor(
         }
     }
 
+    fun updateNotes(item: ItemEntity, notes: String?) {
+        viewModelScope.launch {
+            repository.updateNotes(item, notes).collect { resource ->
+                _actionState.value = resource
+            }
+        }
+    }
+
     fun deleteItem(item: ItemEntity) {
         viewModelScope.launch {
             repository.deleteItem(item).collect { resource ->
