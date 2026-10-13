@@ -41,15 +41,18 @@ fun CameraScanScreen(
 ) {
     val context = LocalContext.current
     var showChooser by remember { mutableStateOf(true) }
-    val cameraCapture = rememberCameraCapture(onPhotoCaptured)
+    val cameraCapture = rememberCameraCapture { photoPath ->
+        showChooser = false
+        onPhotoCaptured(photoPath)
+    }
 
     val galleryLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
+        showChooser = false
         if (uri != null) {
             copyGalleryImageToAppStorage(context, uri)?.let(onPhotoCaptured)
         }
-        showChooser = false
     }
 
     if (showChooser) {
