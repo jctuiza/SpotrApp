@@ -148,7 +148,7 @@ private fun HistoryAction.label(title: String): String = when (this) {
 }
 
 private fun HistoryAction.isTappable(): Boolean = when (this) {
-    HistoryAction.DELETED, HistoryAction.SEARCHED -> false
+    HistoryAction.SEARCHED -> false
     else -> true
 }
 
