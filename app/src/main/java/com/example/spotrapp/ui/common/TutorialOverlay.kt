@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -24,7 +23,6 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -63,31 +61,29 @@ fun TutorialOverlay(
                 .fillMaxSize()
                 .graphicsLayer {
                     compositingStrategy = CompositingStrategy.Offscreen
-                }
-                .drawWithCache {
-                    onDrawBehind {
-                        drawRect(Color.Black.copy(alpha = 0.72f))
-                        val bounds = highlightBounds
-                        if (bounds != null) {
-                            val left = bounds.left + highlightCorrectionX.toPx()
-                            val top = bounds.top + highlightCorrectionY.toPx()
-                            val width = bounds.width
-                            val height = bounds.height
-                            val radius = if (highlightShape == CircleShape) {
-                                min(width, height) / 2f
-                            } else {
-                                fallbackRadius
-                            }
-                            drawRoundRect(
-                                color = Color.Transparent,
-                                topLeft = Offset(left, top),
-                                size = Size(width, height),
-                                cornerRadius = CornerRadius(radius, radius),
-                                blendMode = BlendMode.Clear
-                            )
-                        }
+                },
+            onDraw = {
+                drawRect(Color.Black.copy(alpha = 0.72f))
+                val bounds = highlightBounds
+                if (bounds != null) {
+                    val left = bounds.left + highlightCorrectionX.toPx()
+                    val top = bounds.top + highlightCorrectionY.toPx()
+                    val width = bounds.width
+                    val height = bounds.height
+                    val radius = if (highlightShape == CircleShape) {
+                        min(width, height) / 2f
+                    } else {
+                        fallbackRadius
                     }
+                    drawRoundRect(
+                        color = Color.Transparent,
+                        topLeft = Offset(left, top),
+                        size = Size(width, height),
+                        cornerRadius = CornerRadius(radius, radius),
+                        blendMode = BlendMode.Clear
+                    )
                 }
+            }
         )
 
         if (highlightBounds != null) {
