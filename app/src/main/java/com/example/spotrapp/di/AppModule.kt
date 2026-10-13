@@ -22,6 +22,7 @@ object AppModule {
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, "spotr_database")
             // wipes local data when the schema version changes
+            .addMigrations(AppDatabase.MIGRATION_7_8)
             .fallbackToDestructiveMigration(true)
             .build()
 
