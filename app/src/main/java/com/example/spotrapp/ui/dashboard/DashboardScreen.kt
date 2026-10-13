@@ -484,7 +484,7 @@ fun DashboardScreen(
             )
         }
     }
-
+}
 
 @Composable
 private fun DeleteZoneDialog(
