@@ -260,6 +260,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     if (openedFromRetrieveHistory) {
                         com.example.spotrapp.ui.common.StatusPopup(
                             message = "This item is no longer in your active inventory.",
+                            icon = androidx.compose.material.icons.Icons.Filled.Warning,
                             onDismiss = { navController.popBackStack() }
                         )
                     } else {
