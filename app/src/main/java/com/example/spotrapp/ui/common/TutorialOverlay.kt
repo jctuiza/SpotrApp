@@ -1,9 +1,10 @@
 package com.example.spotrapp.ui.common
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -58,7 +59,7 @@ fun TutorialOverlay(
     var overlayPositionInRoot by remember { mutableStateOf(Offset.Zero) }
     val fallbackRadius = with(density) { 10.dp.toPx() }
 
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .onGloballyPositioned { coordinates ->
@@ -66,6 +67,12 @@ fun TutorialOverlay(
             }
             .clickable(onClick = onDismiss)
     ) {
+        val overlayHeightPx = with(density) { maxHeight.toPx() }
+        val bounds = highlightBounds
+        val localHighlightTop = bounds?.top?.minus(overlayPositionInRoot.y) ?: 0f
+        val highlightCenterY = bounds?.let { localHighlightTop + it.height / 2f }
+        val messageAtTop = highlightCenterY != null && highlightCenterY > overlayHeightPx / 2f
+
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
@@ -74,7 +81,6 @@ fun TutorialOverlay(
                 },
             onDraw = {
                 drawRect(Color.Black.copy(alpha = 0.72f))
-                val bounds = highlightBounds
                 if (bounds != null) {
                     val left = bounds.left - overlayPositionInRoot.x + highlightCorrectionX.toPx()
                     val top = bounds.top - overlayPositionInRoot.y + highlightCorrectionY.toPx()
@@ -96,23 +102,23 @@ fun TutorialOverlay(
             }
         )
 
-        if (highlightBounds != null) {
+        if (bounds != null) {
             with(density) {
-                Box(
+                androidx.compose.foundation.layout.Box(
                     modifier = Modifier
                         .offset(
-                            x = (highlightBounds.left - overlayPositionInRoot.x + highlightCorrectionX.toPx()).toDp(),
-                            y = (highlightBounds.top - overlayPositionInRoot.y + highlightCorrectionY.toPx()).toDp()
+                            x = (bounds.left - overlayPositionInRoot.x + highlightCorrectionX.toPx()).toDp(),
+                            y = (bounds.top - overlayPositionInRoot.y + highlightCorrectionY.toPx()).toDp()
                         )
                         .size(
-                            width = highlightBounds.width.toDp(),
-                            height = highlightBounds.height.toDp()
+                            width = bounds.width.toDp(),
+                            height = bounds.height.toDp()
                         )
                         .border(2.dp, SpotrSecondary, highlightShape)
                 )
             }
         } else {
-            Box(
+            androidx.compose.foundation.layout.Box(
                 modifier = Modifier
                     .align(highlightAlignment)
                     .offset(x = highlightOffsetX, y = highlightOffsetY)
@@ -129,9 +135,17 @@ fun TutorialOverlay(
             fontSize = 15.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .align(Alignment.Center)
+                .align(
+                    when {
+                        bounds == null -> Alignment.Center
+                        messageAtTop -> Alignment.TopCenter
+                        else -> Alignment.BottomCenter
+                    }
+                )
                 .fillMaxWidth()
-                .padding(horizontal = 32.dp)
+                .padding(horizontal = 24.dp, vertical = 32.dp)
+                .background(Color(0xF2102A43), RoundedCornerShape(16.dp))
+                .padding(horizontal = 18.dp, vertical = 14.dp)
         )
     }
 }
