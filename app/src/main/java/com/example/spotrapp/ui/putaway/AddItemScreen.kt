@@ -8,6 +8,7 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.compose.BackHandler
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -99,6 +100,18 @@ fun AddItemScreen(
     var showSavedPopup by remember { mutableStateOf(false) }
     var showConfirmCancelPopup by remember { mutableStateOf(false) }
     var showAddZoneDialog by remember { mutableStateOf(false) }
+
+    BackHandler(
+        enabled = !showConfirmCancelPopup &&
+            !showConfirmAddPopup &&
+            !showSavedPopup &&
+            !showAddZoneDialog &&
+            !showPhotoSourceDialog &&
+            !showTutorial &&
+            !showTutorialCompleteDialog
+    ) {
+        showConfirmCancelPopup = true
+    }
 
     // Used to know that the current zone action came from this screen.
     var addingZoneFromItemScreen by remember { mutableStateOf(false) }
