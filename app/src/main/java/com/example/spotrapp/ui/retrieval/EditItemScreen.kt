@@ -636,12 +636,10 @@ fun EditItemScreen(
 
                                         selectedZone = zone
 
+                                                if (zoneError != null) {
+                                                    zoneError = null
                                                 }
-
-                if (zoneError != null) {
-                                            zoneError = null
-                                        }
-                                    }
+                                            }
                                 )
 
                                 Spacer(
@@ -727,6 +725,9 @@ fun EditItemScreen(
                             )
                         }
                     }
+                }
+
+                        }
                 }
 
                 if (zoneError != null) {
