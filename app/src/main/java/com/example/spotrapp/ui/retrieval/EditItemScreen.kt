@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -606,7 +607,12 @@ fun EditItemScreen(
                         }
 
                     } else {
-
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 240.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
                         Column {
 
                             Text(
@@ -630,7 +636,9 @@ fun EditItemScreen(
 
                                         selectedZone = zone
 
-                                        if (zoneError != null) {
+                                                }
+
+                if (zoneError != null) {
                                             zoneError = null
                                         }
                                     }
