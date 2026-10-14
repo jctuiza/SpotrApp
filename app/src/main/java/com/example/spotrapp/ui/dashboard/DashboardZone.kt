@@ -1,5 +1,9 @@
 package com.example.spotrapp.ui.dashboard
 
+/**
+ * Displays a zone section on the Dashboard, grouping inventory items by their assigned storage location.
+ */
+
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
