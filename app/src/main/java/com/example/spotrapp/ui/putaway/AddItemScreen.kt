@@ -776,8 +776,6 @@ fun AddItemScreen(
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                    }
-
                         }
                     }
 
