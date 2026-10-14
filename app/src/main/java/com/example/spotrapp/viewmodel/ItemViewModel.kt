@@ -102,6 +102,22 @@ class ItemViewModel @Inject constructor(
         }
     }
 
+    fun deleteItems(itemIds: List<Int>) {
+        viewModelScope.launch {
+            repository.deleteItems(itemIds).collect { resource ->
+                _actionState.value = resource
+            }
+        }
+    }
+
+    fun retrieveItems(itemIds: List<Int>) {
+        viewModelScope.launch {
+            repository.retrieveItems(itemIds).collect { resource ->
+                _actionState.value = resource
+            }
+        }
+    }
+
     fun moveItemsToZone(itemIds: List<Int>, zoneId: Int) {
         viewModelScope.launch {
             repository.moveItemsToZone(itemIds, zoneId).collect { resource ->
