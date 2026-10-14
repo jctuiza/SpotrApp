@@ -83,6 +83,32 @@ class ItemRepository @Inject constructor(
         }
     }
 
+    fun deleteItems(itemIds: List<Int>): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            val deletedItems = itemDao.deleteActiveItems(itemIds.distinct())
+            deletedItems.forEach { item ->
+                historyRepository.log(HistoryAction.DELETED, item.name, item.id)
+            }
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Failed to delete selected items"))
+        }
+    }
+
+    fun retrieveItems(itemIds: List<Int>): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            val retrievedItems = itemDao.retrieveActiveItems(itemIds.distinct())
+            retrievedItems.forEach { item ->
+                historyRepository.log(HistoryAction.RETRIEVED, item.name, item.id)
+            }
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Failed to retrieve selected items"))
+        }
+    }
+
     suspend fun isDuplicate(name: String, zoneId: Int, excludingItemId: Int? = null): Boolean {
         val existing = itemDao.findByNameAndZone(name, zoneId)
         return existing != null && existing.id != excludingItemId
