@@ -42,9 +42,7 @@ import java.util.Date
 import java.util.Locale
 
 private data class PhotoMetadata(
-    val fileName: String,
     val sizeLabel: String,
-    val photoDate: String,
     val dimensions: String
 )
 
@@ -69,10 +67,7 @@ fun ItemDetailsBottomSheet(
                     String.format(Locale.getDefault(), "%.2f MB", bytes / (1024.0 * 1024.0))
                 }
                 PhotoMetadata(
-                    fileName = photoFile.name,
                     sizeLabel = sizeLabel,
-                    photoDate = SimpleDateFormat("MMM d, yyyy · h:mm a", Locale.getDefault())
-                        .format(Date(photoFile.lastModified())),
                     dimensions = if (options.outWidth > 0 && options.outHeight > 0) {
                         "${options.outWidth} × ${options.outHeight} px"
                     } else {
@@ -140,30 +135,20 @@ fun ItemDetailsBottomSheet(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    Text(
-                        text = "Photo Information",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                    val metadata = photoMetadata.value
+                    DetailSection(
+                        label = "File Size",
+                        value = metadata?.sizeLabel
+                            ?: if (item.imagePath.isNullOrBlank()) "No photo attached" else "Unavailable"
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                    val metadata = photoMetadata.value
-                    if (metadata == null) {
-                        DetailSection(
-                            label = "Photo",
-                            value = if (item.imagePath.isNullOrBlank()) "No photo attached" else "Photo unavailable"
-                        )
-                    } else {
-                        DetailSection(label = "Filename", value = metadata.fileName)
-                        Spacer(modifier = Modifier.height(12.dp))
-                        DetailSection(label = "File Size", value = metadata.sizeLabel)
-                        Spacer(modifier = Modifier.height(12.dp))
-                        DetailSection(label = "Photo Date", value = metadata.photoDate)
-                        Spacer(modifier = Modifier.height(12.dp))
-                        DetailSection(label = "Image Dimensions", value = metadata.dimensions)
-                    }
+                    DetailSection(
+                        label = "Image Dimensions",
+                        value = metadata?.dimensions
+                            ?: if (item.imagePath.isNullOrBlank()) "No photo attached" else "Unavailable"
+                    )
                 }
             }
 
