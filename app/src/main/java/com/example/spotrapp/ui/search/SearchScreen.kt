@@ -1,8 +1,6 @@
 package com.example.spotrapp.ui.search
 
-/**
- * Handles inventory text and voice search, displays matching items and recent queries, and records search activity.
- */
+// Handles inventory text and voice search, displays matching items and recent queries, and records search activity.
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
