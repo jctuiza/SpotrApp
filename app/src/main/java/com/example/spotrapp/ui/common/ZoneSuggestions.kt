@@ -1,8 +1,6 @@
 package com.example.spotrapp.ui.common
 
-/**
- * Displays suggested zones and selection controls reused by item forms when assigning an item's location.
- */
+// Displays suggested zones and selection controls reused by item forms when assigning an item's location.
 
 import com.example.spotrapp.data.local.ItemEntity
 import com.example.spotrapp.data.local.ZoneEntity
