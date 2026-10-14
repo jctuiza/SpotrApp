@@ -1,8 +1,6 @@
 package com.example.spotrapp.ui.search
 
-/**
- * Displays a single inventory search result and provides the interaction to open that item's details.
- */
+// Displays a single inventory search result and provides the interaction to open that item's details.
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
