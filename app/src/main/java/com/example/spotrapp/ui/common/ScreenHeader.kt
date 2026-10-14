@@ -1,8 +1,6 @@
 package com.example.spotrapp.ui.common
 
-/**
- * Provides a shared screen-header layout to keep titles and header styling consistent.
- */
+// Provides a shared screen-header layout to keep titles and header styling consistent.
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
