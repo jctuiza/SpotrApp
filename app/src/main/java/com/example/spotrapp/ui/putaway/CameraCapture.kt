@@ -1,8 +1,6 @@
 package com.example.spotrapp.ui.putaway
 
-/**
- * Contains camera-capture helpers used to take and handle item photos during item creation.
- */
+// Contains camera-capture helpers used to take and handle item photos during item creation.
 
 import android.Manifest
 import android.content.Context
