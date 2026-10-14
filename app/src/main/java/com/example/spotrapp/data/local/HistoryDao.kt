@@ -1,6 +1,6 @@
 package com.example.spotrapp.data.local
 
-// Provides database queries for recording, updating, deleting, and observing history events and recent searches.
+// database queries for events and recent searches
 
 import androidx.room.Dao
 import androidx.room.Delete

@@ -1,7 +1,6 @@
 package com.example.spotrapp.navigation
 
-// Defines route identifiers used to navigate between SpotrApp screens consistently.
-
+// for consistency
 object Routes {
 
     const val ONBOARDING = "onboarding"
@@ -12,10 +11,6 @@ object Routes {
 
     // Camera scan screen
     const val PUTAWAY = "putaway"
-
-    // Add item screen — photoPath is an optional query-style arg so
-    // Routes.ADD_ITEM (no photo) and Routes.addItem(path) (from Camera)
-    // both resolve to the same route.
     const val ADD_ITEM = "add_item?photoPath={photoPath}"
 
     fun addItem(photoPath: String? = null): String =

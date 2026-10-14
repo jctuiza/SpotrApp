@@ -1,7 +1,6 @@
 package com.example.spotrapp.viewmodel
 
-// Exposes history and recent-search data to the UI and requests history logging through the repository.
-
+// only calls the history repo without directly calling history dao
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spotrapp.data.local.HistoryAction

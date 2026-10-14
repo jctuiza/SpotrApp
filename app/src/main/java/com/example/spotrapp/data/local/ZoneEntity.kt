@@ -1,7 +1,6 @@
 package com.example.spotrapp.data.local
 
-// Represents a storage zone in the database; zone names are unique so items can be organized consistently.
-
+// for the zones, called in item entity as foreign key
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey

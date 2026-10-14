@@ -1,6 +1,6 @@
 package com.example.spotrapp.di
 
-// Configures Hilt dependency injection for the Room database, DAOs, and repositories used across the app.
+// uses hilt di for the db and other components of the app (eg. dao, repos)
 
 import android.content.Context
 import androidx.room.Room

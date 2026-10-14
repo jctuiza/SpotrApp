@@ -1,6 +1,6 @@
 package com.example.spotrapp.data.repository
 
-// Coordinates history logging and observation between the UI-facing ViewModel and the Room history DAO.
+// middleman for history dao and history vm
 
 import com.example.spotrapp.data.local.HistoryAction
 import com.example.spotrapp.data.local.HistoryDao
@@ -22,7 +22,7 @@ class HistoryRepository @Inject constructor(
 
     val recentSearches: Flow<List<String>> = historyDao.getRecentSearches(5)
 
-    // item repository calls this so screens never have to remember to any actions (add, delete etc).
+    // item repository calls this so screens never have to remember to any actions (add, delete etc)
     suspend fun log(action: HistoryAction, title: String, itemId: Int? = null) {
         historyDao.insert(HistoryEntity(action = action, itemId = itemId, title = title))
     }

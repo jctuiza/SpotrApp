@@ -1,6 +1,6 @@
 package com.example.spotrapp.viewmodel
 
-// Holds inventory screen state and launches item operations such as adding, editing, moving, retrieving, and deleting items.
+// calls the item repo without directly calling item dao
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -128,7 +128,7 @@ class ItemViewModel @Inject constructor(
         }
     }
 
-    // Marks an item as retrieved; the active inventory flow removes it.
+    // marks an item as retrieved
     fun retrieveItem(item: ItemEntity) {
         viewModelScope.launch {
             repository.retrieveItem(item).collect { resource ->

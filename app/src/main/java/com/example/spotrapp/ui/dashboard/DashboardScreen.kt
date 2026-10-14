@@ -1,6 +1,6 @@
 package com.example.spotrapp.ui.dashboard
 
-// Main inventory screen: observes items and zones, supports item selection and bulk actions, and opens item and zone dialogs.
+// main dashboard screen
 
 import android.widget.Toast
 import androidx.compose.foundation.border

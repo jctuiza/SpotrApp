@@ -1,7 +1,6 @@
 package com.example.spotrapp.ui.dashboard
 
-// Shows a compact item-details bottom sheet from the Dashboard for viewing an item's information.
-
+// for clicking the 3 dot below the item card
 import android.graphics.BitmapFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

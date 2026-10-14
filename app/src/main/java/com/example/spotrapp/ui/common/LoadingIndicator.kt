@@ -1,6 +1,6 @@
 package com.example.spotrapp.ui.common
 
-// Provides a reusable loading indicator so screens show consistent feedback while work is in progress.
+// loading indicator
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

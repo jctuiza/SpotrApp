@@ -183,8 +183,6 @@ private fun createPhotoUri(
         fileName
     )
 
-    // Must match the authority declared in AndroidManifest.xml's
-    // <provider> entry.
     val uri = FileProvider.getUriForFile(
         context,
         "com.example.spotrapp.fileprovider",

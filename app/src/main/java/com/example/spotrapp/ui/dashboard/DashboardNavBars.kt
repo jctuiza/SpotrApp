@@ -1,6 +1,5 @@
 package com.example.spotrapp.ui.dashboard
 
-// Defines the Dashboard navigation controls that let users switch between the app's main areas.
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

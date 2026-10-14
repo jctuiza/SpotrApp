@@ -1,7 +1,6 @@
 package com.example.spotrapp.ui.putaway
 
-// Provides the form for adding an inventory item, selecting its zone, and saving its details and photo.
-
+// add item screen
 import android.Manifest
 import android.net.Uri
 import android.content.Intent

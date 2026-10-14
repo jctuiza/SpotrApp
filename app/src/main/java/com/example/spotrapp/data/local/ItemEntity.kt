@@ -1,7 +1,6 @@
 package com.example.spotrapp.data.local
 
-// Defines the inventory item table and its fields, including zone assignment, notes, photo path, and retrieval status.
-
+// item table
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -11,6 +10,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "items",
     foreignKeys = [
+        // used foreign key for zones instead of plain strings
         ForeignKey(
             entity = ZoneEntity::class,
             parentColumns = ["id"],

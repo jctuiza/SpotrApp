@@ -1,7 +1,6 @@
 package com.example.spotrapp.ui.putaway
 
-// Displays the camera scanning interface used by the item put-away flow to capture item images.
-
+// for camera scan screen
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts

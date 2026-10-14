@@ -1,7 +1,6 @@
 package com.example.spotrapp.data.local
 
-// Contains Room queries for observing and changing inventory items, including moving, retrieving, and deleting selected items.
-
+// dao and queries for item entities
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

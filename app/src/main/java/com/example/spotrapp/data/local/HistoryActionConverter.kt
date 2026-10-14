@@ -1,6 +1,6 @@
 package com.example.spotrapp.data.local
 
-// Converts HistoryAction values to and from strings so Room can store them in SQLite.
+// converts history action to and from strings
 
 import androidx.room.TypeConverter
 

@@ -1,6 +1,5 @@
 package com.example.spotrapp.ui.dashboard
 
-// Provides the dialog for creating a new storage zone from the Dashboard.
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement

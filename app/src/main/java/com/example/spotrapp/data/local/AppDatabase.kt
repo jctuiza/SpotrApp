@@ -1,6 +1,6 @@
 package com.example.spotrapp.data.local
 
-// Defines the Room database, its entities, DAOs, type converters, and schema migrations.
+// database, entities, dao, converters, and migrations
 
 import androidx.room.Database
 import androidx.room.migration.Migration
@@ -17,8 +17,8 @@ import androidx.room.TypeConverters
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         val MIGRATION_7_8: Migration = object : Migration(7, 8) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL(
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
                     "ALTER TABLE items ADD COLUMN isRetrieved INTEGER NOT NULL DEFAULT 0"
                 )
             }

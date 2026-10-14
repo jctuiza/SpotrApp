@@ -1,7 +1,6 @@
 package com.example.spotrapp.di
 
-// Initializes the Android application with Hilt so dependency injection is available throughout the app.
-
+// initializes the app with hilt so it has dependency injections
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 

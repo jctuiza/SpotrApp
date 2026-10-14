@@ -1,7 +1,6 @@
 package com.example.spotrapp.ui.search
 
-// Contains the voice-capture support used to turn spoken input into a search query.
-
+// for voice capture support
 import android.app.Activity
 import android.content.Intent
 import android.speech.RecognizerIntent
@@ -24,7 +23,6 @@ fun rememberVoiceCapture(onResult: (String) -> Unit): VoiceCaptureState {
                 onResult(spokenText)
             }
         }
-        // resultCode != RESULT_OK: user canceled, nothing happens
     }
 
     return VoiceCaptureState(

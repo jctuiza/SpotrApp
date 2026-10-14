@@ -1,7 +1,6 @@
 package com.example.spotrapp.ui.onboarding
 
-// Introduces SpotrApp's main features and guides first-time users through the onboarding flow.
-
+// for onboarding and tutorial purposes, does not show up if the user already finished the tutorial or skips it
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

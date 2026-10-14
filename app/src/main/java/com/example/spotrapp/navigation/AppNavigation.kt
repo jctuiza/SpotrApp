@@ -1,7 +1,6 @@
 package com.example.spotrapp.navigation
 
-// Builds the Compose navigation host and connects app routes to their screens and shared ViewModels.
-
+// controls the navigation between screens
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext

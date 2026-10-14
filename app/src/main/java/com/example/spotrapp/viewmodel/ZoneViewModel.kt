@@ -1,6 +1,6 @@
 package com.example.spotrapp.viewmodel
 
-// Exposes storage-zone state and coordinates adding, renaming, deleting, and selecting zones for UI screens.
+// only calls the zone repo without directly calling zone dao
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
