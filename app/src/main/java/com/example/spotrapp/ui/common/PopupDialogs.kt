@@ -1,8 +1,6 @@
 package com.example.spotrapp.ui.common
 
-/**
- * Defines reusable popup dialogs used to confirm actions and communicate operation results.
- */
+// Defines reusable popup dialogs used to confirm actions and communicate operation results.
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
