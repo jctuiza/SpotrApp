@@ -1,5 +1,9 @@
 package com.example.spotrapp.ui.dashboard
 
+/**
+ * Provides the dialog for renaming an existing storage zone.
+ */
+
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
