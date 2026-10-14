@@ -92,7 +92,8 @@ fun rememberCameraCapture(
             Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
 
-    return CameraCaptureState(
+
+    val captureState = CameraCaptureState(
         hasPermission = hasPermission,
         launch = {
             if (hasPermission) {
@@ -105,10 +106,17 @@ fun rememberCameraCapture(
         }
     )
 
+    // Explain why camera permission is needed before requesting it
     if (showPermissionRationale) {
         AlertDialog(
             onDismissRequest = { showPermissionRationale = false },
-            title = { Text("Allow camera access?", color = SpotrPrimary, fontWeight = FontWeight.Bold) },
+            title = {
+                Text(
+                    "Allow camera access?",
+                    color = SpotrPrimary,
+                    fontWeight = FontWeight.Bold
+                )
+            },
             text = {
                 Text(
                     "SpotrApp only requests camera access when you choose Take Photo. The camera is used to capture an item photo that you choose to save with that item.",
@@ -126,7 +134,9 @@ fun rememberCameraCapture(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showPermissionRationale = false }) {
+                TextButton(
+                    onClick = { showPermissionRationale = false }
+                ) {
                     Text("Not now", color = SpotrPrimary)
                 }
             },
@@ -134,10 +144,17 @@ fun rememberCameraCapture(
         )
     }
 
+    // tells the user when camera permission has been denied
     if (showPermissionDenied) {
         AlertDialog(
             onDismissRequest = { showPermissionDenied = false },
-            title = { Text("Camera permission denied", color = SpotrPrimary, fontWeight = FontWeight.Bold) },
+            title = {
+                Text(
+                    "Camera permission denied",
+                    color = SpotrPrimary,
+                    fontWeight = FontWeight.Bold
+                )
+            },
             text = {
                 Text(
                     "Camera access was not granted. You can still choose a photo from your gallery, or allow camera access in your device settings.",
@@ -145,13 +162,17 @@ fun rememberCameraCapture(
                 )
             },
             confirmButton = {
-                TextButton(onClick = { showPermissionDenied = false }) {
+                TextButton(
+                    onClick = { showPermissionDenied = false }
+                ) {
                     Text("OK", color = SpotrPrimary)
                 }
             },
             containerColor = Color.White
         )
     }
+
+    return captureState
 }
 
 data class CameraCaptureState(
