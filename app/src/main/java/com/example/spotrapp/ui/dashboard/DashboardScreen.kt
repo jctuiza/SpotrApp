@@ -25,6 +25,12 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -85,6 +91,7 @@ fun DashboardScreen(
     var selectedItemIds by remember { mutableStateOf(setOf<Int>()) }
     var showMoveDialog by remember { mutableStateOf(false) }
     var showBulkDeleteDialog by remember { mutableStateOf(false) }
+    var showBulkActionsMenu by remember { mutableStateOf(false) }
     var pendingBulkAction by remember { mutableStateOf<String?>(null) }
     var bulkActionStarted by remember { mutableStateOf(false) }
     var showRenameZoneDialog by remember { mutableStateOf(false) }
@@ -143,6 +150,12 @@ fun DashboardScreen(
 
         if (deleteItemCount != null) {
             showDeleteZoneDialog = true
+        }
+    }
+
+    LaunchedEffect(selectedItemIds) {
+        if (selectedItemIds.isEmpty()) {
+            showBulkActionsMenu = false
         }
     }
 
@@ -246,50 +259,14 @@ fun DashboardScreen(
                     }
 
                     if (selectedItemIds.isNotEmpty()) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Text(
-                                text = "${selectedItemIds.size} item(s) selected",
-                                color = SpotrPrimary,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Button(
-                                    onClick = { showMoveDialog = true },
-                                    enabled = pendingBulkAction == null,
-                                    colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary),
-                                    modifier = Modifier.weight(1f)
-                                ) { Text("Move", color = SpotrWhite) }
-                                Button(
-                                    onClick = {
-                                        pendingBulkAction = "retrieve"
-                                        itemViewModel.retrieveItems(selectedItemIds.toList())
-                                    },
-                                    enabled = pendingBulkAction == null,
-                                    colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
-                                    modifier = Modifier.weight(1f)
-                                ) { Text("Retrieve", color = SpotrPrimary) }
-                            }
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Button(
-                                    onClick = { showBulkDeleteDialog = true },
-                                    enabled = pendingBulkAction == null,
-                                    colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
-                                    modifier = Modifier.weight(1f)
-                                ) { Text("Delete", color = SpotrPrimary) }
-                                Button(
-                                    onClick = { selectedItemIds = emptySet() },
-                                    enabled = pendingBulkAction == null,
-                                    colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
-                                    modifier = Modifier.weight(1f)
-                                ) { Text("Cancel selection", color = SpotrPrimary) }
-                            }
-                        }
+                        Text(
+                            text = "${selectedItemIds.size} item(s) selected",
+                            color = SpotrPrimary,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
                     }
 
-                    
                     val filteredItems =
                         if (selectedZone == "All") {
 
@@ -382,6 +359,67 @@ fun DashboardScreen(
         }
 
         
+        if (selectedItemIds.isNotEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                Box(
+                    modifier = Modifier.padding(end = 16.dp, bottom = 88.dp)
+                ) {
+                    FloatingActionButton(
+                        onClick = { showBulkActionsMenu = true },
+                        containerColor = SpotrPrimary,
+                        contentColor = SpotrWhite
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = "Bulk actions"
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = showBulkActionsMenu,
+                        onDismissRequest = { showBulkActionsMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Move") },
+                            enabled = pendingBulkAction == null,
+                            onClick = {
+                                showBulkActionsMenu = false
+                                showMoveDialog = true
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Retrieve") },
+                            enabled = pendingBulkAction == null,
+                            onClick = {
+                                showBulkActionsMenu = false
+                                pendingBulkAction = "retrieve"
+                                itemViewModel.retrieveItems(selectedItemIds.toList())
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Delete") },
+                            enabled = pendingBulkAction == null,
+                            onClick = {
+                                showBulkActionsMenu = false
+                                showBulkDeleteDialog = true
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Cancel selection") },
+                            enabled = pendingBulkAction == null,
+                            onClick = {
+                                showBulkActionsMenu = false
+                                selectedItemIds = emptySet()
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
         if (showAddZoneDialog) {
 
             AddZoneDialog(
