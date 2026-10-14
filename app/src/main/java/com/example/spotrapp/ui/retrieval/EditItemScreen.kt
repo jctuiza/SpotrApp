@@ -724,10 +724,8 @@ fun EditItemScreen(
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                    }
-                }
-
                         }
+                    }
                 }
 
                 if (zoneError != null) {
