@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,7 +27,8 @@ import com.example.spotrapp.ui.theme.SpotrTextBlack
 fun RecentSearchesRow(
     query: String,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onRemove: () -> Unit = {}
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -52,8 +55,18 @@ fun RecentSearchesRow(
             Text(
                 text = query,
                 color = SpotrTextBlack,
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                maxLines = 1,
+                modifier = Modifier.weight(1f)
             )
+
+            IconButton(onClick = onRemove) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = "Remove $query from recent searches",
+                    tint = SpotrGray
+                )
+            }
         }
     }
 }
