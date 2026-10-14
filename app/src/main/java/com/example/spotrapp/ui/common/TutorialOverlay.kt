@@ -1,5 +1,9 @@
 package com.example.spotrapp.ui.common
 
+/**
+ * Displays the guided tutorial overlay and highlights the relevant UI area during onboarding.
+ */
+
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
