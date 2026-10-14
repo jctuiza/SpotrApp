@@ -12,10 +12,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,6 +38,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -77,9 +82,12 @@ fun DashboardScreen(
 
     var selectedItemIds by remember { mutableStateOf(setOf<Int>()) }
     var showMoveDialog by remember { mutableStateOf(false) }
+    var showBulkDeleteDialog by remember { mutableStateOf(false) }
+    var pendingBulkAction by remember { mutableStateOf<String?>(null) }
     var showRenameZoneDialog by remember { mutableStateOf(false) }
 
     val itemState by itemViewModel.itemState.collectAsStateWithLifecycle()
+    val itemActionState by itemViewModel.actionState.collectAsStateWithLifecycle()
     val zoneState by zoneViewModel.zoneState.collectAsStateWithLifecycle()
     val zoneActionState by zoneViewModel.actionState.collectAsStateWithLifecycle()
     val deleteItemCount by zoneViewModel.deleteItemCount.collectAsStateWithLifecycle()
@@ -132,6 +140,31 @@ fun DashboardScreen(
 
         if (deleteItemCount != null) {
             showDeleteZoneDialog = true
+        }
+    }
+
+    LaunchedEffect(itemActionState) {
+        when (val action = itemActionState) {
+            is Resource.Success -> {
+                if (pendingBulkAction != null) {
+                    Toast.makeText(
+                        context,
+                        if (pendingBulkAction == "retrieve") "Selected items retrieved." else "Selected items deleted.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    selectedItemIds = emptySet()
+                    pendingBulkAction = null
+                    itemViewModel.clearActionState()
+                }
+            }
+            is Resource.Error -> {
+                if (pendingBulkAction != null) {
+                    Toast.makeText(context, action.message, Toast.LENGTH_LONG).show()
+                    pendingBulkAction = null
+                    itemViewModel.clearActionState()
+                }
+            }
+            else -> Unit
         }
     }
 
@@ -201,23 +234,44 @@ fun DashboardScreen(
                     }
 
                     if (selectedItemIds.isNotEmpty()) {
-                        Row(
+                        Column(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-                            Button(
-                                onClick = { showMoveDialog = true },
-                                colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary),
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text("Move " + selectedItemIds.size + " selected", color = SpotrWhite)
+                            Text(
+                                text = "${selectedItemIds.size} item(s) selected",
+                                color = SpotrPrimary,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(
+                                    onClick = { showMoveDialog = true },
+                                    colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary),
+                                    modifier = Modifier.weight(1f)
+                                ) { Text("Move", color = SpotrWhite) }
+                                Button(
+                                    onClick = {
+                                        pendingBulkAction = "retrieve"
+                                        itemViewModel.retrieveItems(selectedItemIds.toList())
+                                    },
+                                    enabled = pendingBulkAction == null,
+                                    colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
+                                    modifier = Modifier.weight(1f)
+                                ) { Text("Retrieve", color = SpotrPrimary) }
                             }
-                            Button(
-                                onClick = { selectedItemIds = emptySet() },
-                                colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text("Cancel", color = SpotrPrimary)
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(
+                                    onClick = { showBulkDeleteDialog = true },
+                                    enabled = pendingBulkAction == null,
+                                    colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
+                                    modifier = Modifier.weight(1f)
+                                ) { Text("Delete", color = SpotrPrimary) }
+                                Button(
+                                    onClick = { selectedItemIds = emptySet() },
+                                    enabled = pendingBulkAction == null,
+                                    colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
+                                    modifier = Modifier.weight(1f)
+                                ) { Text("Cancel selection", color = SpotrPrimary) }
                             }
                         }
                     }
@@ -424,19 +478,30 @@ fun DashboardScreen(
                             modifier = Modifier.fillMaxWidth()
                         )
                         Spacer(Modifier.height(16.dp))
-                        zones.forEach { zone ->
-                            Button(
-                                onClick = {
-                                    itemViewModel.moveItemsToZone(selectedItemIds.toList(), zone.id)
-                                    selectedItemIds = emptySet()
-                                    showMoveDialog = false
-                                    Toast.makeText(context, "Items moved to " + zone.name + ".", Toast.LENGTH_SHORT).show()
-                                },
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp).height(48.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Text(zone.name, color = SpotrPrimary, fontWeight = FontWeight.Bold)
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth().heightIn(max = 280.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            items(zones) { zone ->
+                                Button(
+                                    onClick = {
+                                        itemViewModel.moveItemsToZone(selectedItemIds.toList(), zone.id)
+                                        selectedItemIds = emptySet()
+                                        showMoveDialog = false
+                                        Toast.makeText(context, "Items moved to " + zone.name + ".", Toast.LENGTH_SHORT).show()
+                                    },
+                                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        zone.name,
+                                        color = SpotrPrimary,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
                             }
                         }
                         Spacer(Modifier.height(8.dp))
@@ -453,7 +518,28 @@ fun DashboardScreen(
             }
         }
 
-                if (
+                if (showBulkDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = { showBulkDeleteDialog = false },
+                title = { Text("Delete selected items?") },
+                text = { Text("Delete ${selectedItemIds.size} selected item(s)? This cannot be undone.") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showBulkDeleteDialog = false
+                            pendingBulkAction = "delete"
+                            itemViewModel.deleteItems(selectedItemIds.toList())
+                        },
+                        enabled = pendingBulkAction == null
+                    ) { Text("Delete") }
+                },
+                dismissButton = {
+                    Button(onClick = { showBulkDeleteDialog = false }) { Text("Cancel") }
+                }
+            )
+        }
+
+        if (
             showItemDetailsSheet &&
             selectedItem != null
         ) {
