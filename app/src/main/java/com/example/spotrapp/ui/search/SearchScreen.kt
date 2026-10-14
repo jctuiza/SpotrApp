@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -68,8 +69,16 @@ fun SearchScreen(
     itemViewModel: ItemViewModel = hiltViewModel(),
     historyViewModel: HistoryViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val hiddenSearchesPrefs = remember {
+        context.getSharedPreferences("spotr_recent_searches", android.content.Context.MODE_PRIVATE)
+    }
+    var hiddenSearches by remember {
+        mutableStateOf(hiddenSearchesPrefs.getStringSet("hidden_queries", emptySet())?.toSet() ?: emptySet())
+    }
     val itemState by itemViewModel.itemState.collectAsStateWithLifecycle()
-    val recentSearches by historyViewModel.recentSearches.collectAsStateWithLifecycle()
+    val allRecentSearches by historyViewModel.recentSearches.collectAsStateWithLifecycle()
+    val recentSearches = allRecentSearches.filter { it !in hiddenSearches }
     val items = (itemState as? Resource.Success)?.data ?: emptyList()
 
     // search bar state
@@ -84,7 +93,14 @@ fun SearchScreen(
         searchText = query
         hasSearched = query.isNotBlank()
         if (query.isNotBlank()) {
-            historyViewModel.logSearch(query)
+            val normalizedQuery = query.trim()
+            if (normalizedQuery in hiddenSearches) {
+                hiddenSearches = hiddenSearches - normalizedQuery
+                hiddenSearchesPrefs.edit()
+                    .putStringSet("hidden_queries", hiddenSearches)
+                    .apply()
+            }
+            historyViewModel.logSearch(normalizedQuery)
         }
     }
 
@@ -312,7 +328,13 @@ fun SearchScreen(
                     items(recentSearches) { query ->
                         RecentSearchesRow(
                             query = query,
-                            onClick = { runSearch(query) }
+                            onClick = { runSearch(query) },
+                            onRemove = {
+                                hiddenSearches = hiddenSearches + query
+                                hiddenSearchesPrefs.edit()
+                                    .putStringSet("hidden_queries", hiddenSearches)
+                                    .apply()
+                            }
                         )
                     }
                 }
