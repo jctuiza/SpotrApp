@@ -1,8 +1,6 @@
 package com.example.spotrapp.ui.common
 
-/**
- * Contains reusable zone buttons used to display selectable storage locations with consistent styling.
- */
+// Contains reusable zone buttons used to display selectable storage locations with consistent styling.
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
