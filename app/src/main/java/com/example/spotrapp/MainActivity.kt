@@ -1,5 +1,9 @@
 package com.example.spotrapp
 
+/**
+ * Application entry screen: applies the app theme and launches the main navigation graph.
+ */
+
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
