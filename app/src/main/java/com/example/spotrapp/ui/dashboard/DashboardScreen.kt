@@ -259,12 +259,20 @@ fun DashboardScreen(
                     }
 
                     if (selectedItemIds.isNotEmpty()) {
-                        Text(
-                            text = "${selectedItemIds.size} item(s) selected",
-                            color = SpotrPrimary,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
+                        Surface(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            color = SpotrSecondary,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, SpotrPrimary.copy(alpha = 0.15f))
+                        ) {
+                            Text(
+                                text = "${selectedItemIds.size} item(s) selected",
+                                color = SpotrPrimary,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                            )
+                        }
                     }
 
                     val filteredItems =
@@ -380,10 +388,21 @@ fun DashboardScreen(
 
                     DropdownMenu(
                         expanded = showBulkActionsMenu,
-                        onDismissRequest = { showBulkActionsMenu = false }
+                        onDismissRequest = { showBulkActionsMenu = false },
+                        modifier = Modifier.border(
+                            1.dp,
+                            SpotrSecondary,
+                            RoundedCornerShape(12.dp)
+                        )
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Move") },
+                            text = {
+                                Text(
+                                    "Move",
+                                    color = SpotrPrimary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            },
                             enabled = pendingBulkAction == null,
                             onClick = {
                                 showBulkActionsMenu = false
@@ -391,7 +410,13 @@ fun DashboardScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Retrieve") },
+                            text = {
+                                Text(
+                                    "Retrieve",
+                                    color = SpotrPrimary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            },
                             enabled = pendingBulkAction == null,
                             onClick = {
                                 showBulkActionsMenu = false
@@ -400,7 +425,13 @@ fun DashboardScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Delete") },
+                            text = {
+                                Text(
+                                    "Delete",
+                                    color = SpotrPrimary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            },
                             enabled = pendingBulkAction == null,
                             onClick = {
                                 showBulkActionsMenu = false
@@ -408,7 +439,13 @@ fun DashboardScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Cancel selection") },
+                            text = {
+                                Text(
+                                    "Cancel selection",
+                                    color = SpotrPrimary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            },
                             enabled = pendingBulkAction == null,
                             onClick = {
                                 showBulkActionsMenu = false
@@ -568,25 +605,63 @@ fun DashboardScreen(
             }
         }
 
-                if (showBulkDeleteDialog) {
-            AlertDialog(
-                onDismissRequest = { showBulkDeleteDialog = false },
-                title = { Text("Delete selected items?") },
-                text = { Text("Delete ${selectedItemIds.size} selected item(s)? This cannot be undone.") },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            showBulkDeleteDialog = false
-                            pendingBulkAction = "delete"
-                            itemViewModel.deleteItems(selectedItemIds.toList())
-                        },
-                        enabled = pendingBulkAction == null
-                    ) { Text("Delete") }
-                },
-                dismissButton = {
-                    Button(onClick = { showBulkDeleteDialog = false }) { Text("Cancel") }
+        if (showBulkDeleteDialog) {
+            Dialog(onDismissRequest = { showBulkDeleteDialog = false }) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = SpotrWhite,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .border(1.dp, SpotrSecondary, RoundedCornerShape(12.dp))
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Delete selected items?",
+                            color = SpotrPrimary,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            text = "Delete ${selectedItemIds.size} selected item(s)? This cannot be undone.",
+                            color = Color.DarkGray,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(Modifier.height(24.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = { showBulkDeleteDialog = false },
+                                modifier = Modifier.weight(1f).height(48.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text("Cancel", color = SpotrPrimary, fontWeight = FontWeight.Bold)
+                            }
+                            Button(
+                                onClick = {
+                                    showBulkDeleteDialog = false
+                                    pendingBulkAction = "delete"
+                                    itemViewModel.deleteItems(selectedItemIds.toList())
+                                },
+                                enabled = pendingBulkAction == null,
+                                modifier = Modifier.weight(1f).height(48.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text("Delete", color = SpotrWhite, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
                 }
-            )
+            }
         }
 
         if (
