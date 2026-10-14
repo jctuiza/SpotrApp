@@ -153,7 +153,11 @@ fun DashboardScreen(
                 if (pendingBulkAction != null && bulkActionStarted) {
                     Toast.makeText(
                         context,
-                        if (pendingBulkAction == "retrieve") "Selected items retrieved." else "Selected items deleted.",
+                        when (pendingBulkAction) {
+                            "retrieve" -> "Selected items retrieved."
+                            "move" -> "Selected items moved."
+                            else -> "Selected items deleted."
+                        },
                         Toast.LENGTH_SHORT
                     ).show()
                     selectedItemIds = emptySet()
@@ -252,6 +256,7 @@ fun DashboardScreen(
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Button(
                                     onClick = { showMoveDialog = true },
+                                    enabled = pendingBulkAction == null,
                                     colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary),
                                     modifier = Modifier.weight(1f)
                                 ) { Text("Move", color = SpotrWhite) }
@@ -491,10 +496,9 @@ fun DashboardScreen(
                             items(zones) { zone ->
                                 Button(
                                     onClick = {
+                                        pendingBulkAction = "move"
                                         itemViewModel.moveItemsToZone(selectedItemIds.toList(), zone.id)
-                                        selectedItemIds = emptySet()
                                         showMoveDialog = false
-                                        Toast.makeText(context, "Items moved to " + zone.name + ".", Toast.LENGTH_SHORT).show()
                                     },
                                     modifier = Modifier.fillMaxWidth().height(48.dp),
                                     colors = ButtonDefaults.buttonColors(containerColor = SpotrSecondary),
