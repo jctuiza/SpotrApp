@@ -18,6 +18,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +42,9 @@ import com.example.spotrapp.ui.theme.SpotrTextBlack
 import com.example.spotrapp.ui.theme.SpotrWhite
 import com.example.spotrapp.viewmodel.HistoryViewModel
 import androidx.compose.ui.platform.LocalLocale
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 
 @Composable
 fun HistoryScreen(
@@ -46,6 +54,18 @@ fun HistoryScreen(
     historyViewModel: HistoryViewModel = hiltViewModel()
 ) {
     val historyState by historyViewModel.historyState.collectAsStateWithLifecycle()
+    var navigationInProgress by remember { mutableStateOf(false) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                navigationInProgress = false
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     Scaffold(
         bottomBar = {
@@ -126,7 +146,11 @@ fun HistoryScreen(
                                 HistoryItemRow(
                                     entry = entry,
                                     onClick = {
-                                        entry.itemId?.let { onItemClick(it, entry.action) }
+                                        val itemId = entry.itemId
+                                        if (!navigationInProgress && itemId != null) {
+                                            navigationInProgress = true
+                                            onItemClick(itemId, entry.action)
+                                        }
                                     }
                                 )
                             }
