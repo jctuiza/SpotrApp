@@ -1,5 +1,9 @@
 package com.example.spotrapp.ui.theme
 
+/**
+ * Configures the app-wide Material theme, applying SpotrApp colors and typography to Compose screens.
+ */
+
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
