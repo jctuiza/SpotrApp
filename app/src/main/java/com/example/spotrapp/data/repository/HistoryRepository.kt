@@ -1,8 +1,6 @@
 package com.example.spotrapp.data.repository
 
-/**
- * Coordinates history logging and observation between the UI-facing ViewModel and the Room history DAO.
- */
+// Coordinates history logging and observation between the UI-facing ViewModel and the Room history DAO.
 
 import com.example.spotrapp.data.local.HistoryAction
 import com.example.spotrapp.data.local.HistoryDao
