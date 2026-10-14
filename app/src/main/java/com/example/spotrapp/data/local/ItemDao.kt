@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -41,6 +42,33 @@ interface ItemDao {
     @Query("SELECT COUNT(*) FROM items WHERE zoneId = :zoneId AND isRetrieved = 0")
     suspend fun countItemsInZone(zoneId: Int): Int
 
-    @Query("UPDATE items SET zoneId = :zoneId WHERE id IN (:itemIds)")
+    @Query("UPDATE items SET zoneId = :zoneId WHERE id IN (:itemIds) AND isRetrieved = 0")
     suspend fun moveItemsToZone(itemIds: List<Int>, zoneId: Int): Int
+
+    @Query("SELECT * FROM items WHERE id IN (:itemIds) AND isRetrieved = 0")
+    suspend fun getActiveItemsByIds(itemIds: List<Int>): List<ItemEntity>
+
+    @Query("DELETE FROM items WHERE id IN (:itemIds) AND isRetrieved = 0")
+    suspend fun deleteItemsByIds(itemIds: List<Int>): Int
+
+    @Transaction
+    suspend fun deleteActiveItems(itemIds: List<Int>): List<ItemEntity> {
+        if (itemIds.isEmpty()) return emptyList()
+        val activeItems = getActiveItemsByIds(itemIds)
+        deleteItemsByIds(activeItems.map { it.id })
+        return activeItems
+    }
+
+    @Transaction
+    suspend fun retrieveActiveItems(itemIds: List<Int>): List<ItemEntity> {
+        if (itemIds.isEmpty()) return emptyList()
+        val activeItems = getActiveItemsByIds(itemIds)
+        if (activeItems.isNotEmpty()) {
+            markItemsRetrieved(activeItems.map { it.id })
+        }
+        return activeItems
+    }
+
+    @Query("UPDATE items SET isRetrieved = 1 WHERE id IN (:itemIds) AND isRetrieved = 0")
+    suspend fun markItemsRetrieved(itemIds: List<Int>): Int
 }
