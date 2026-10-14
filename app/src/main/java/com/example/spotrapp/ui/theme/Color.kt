@@ -1,5 +1,9 @@
 package com.example.spotrapp.ui.theme
 
+/**
+ * Defines the color palette used by SpotrApp's Compose components and screens.
+ */
+
 import androidx.compose.ui.graphics.Color
 
 // Primary
