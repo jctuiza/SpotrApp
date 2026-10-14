@@ -1,5 +1,9 @@
 package com.example.spotrapp.viewmodel
 
+/**
+ * Exposes storage-zone state and coordinates adding, renaming, deleting, and selecting zones for UI screens.
+ */
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spotrapp.data.local.ZoneEntity
