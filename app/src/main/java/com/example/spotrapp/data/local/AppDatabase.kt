@@ -1,5 +1,9 @@
 package com.example.spotrapp.data.local
 
+/**
+ * Defines the Room database, its entities, DAOs, type converters, and schema migrations.
+ */
+
 import androidx.room.Database
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
