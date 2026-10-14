@@ -1,5 +1,9 @@
 package com.example.spotrapp.ui.search
 
+/**
+ * Renders a recent-search entry with actions to run the query again or remove it from the recent-search list.
+ */
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
