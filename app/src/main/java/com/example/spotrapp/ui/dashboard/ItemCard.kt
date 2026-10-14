@@ -1,8 +1,6 @@
 package com.example.spotrapp.ui.dashboard
 
-/**
- * Renders an individual inventory item card with its key details and click/selection interactions.
- */
+// Renders an individual inventory item card with its key details and click/selection interactions.
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
