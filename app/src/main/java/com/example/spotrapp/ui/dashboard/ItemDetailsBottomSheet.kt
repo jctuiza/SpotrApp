@@ -1,5 +1,9 @@
 package com.example.spotrapp.ui.dashboard
 
+/**
+ * Shows a compact item-details bottom sheet from the Dashboard for viewing an item's information.
+ */
+
 import android.graphics.BitmapFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
