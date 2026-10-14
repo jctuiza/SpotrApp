@@ -1,8 +1,6 @@
 package com.example.spotrapp.data.local
 
-/**
- * Defines the inventory item table and its fields, including zone assignment, notes, photo path, and retrieval status.
- */
+// Defines the inventory item table and its fields, including zone assignment, notes, photo path, and retrieval status.
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
