@@ -1,5 +1,9 @@
 package com.example.spotrapp.data.local
 
+/**
+ * Provides database operations for creating, editing, deleting, and finding storage zones.
+ */
+
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
