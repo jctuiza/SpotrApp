@@ -78,6 +78,14 @@ fun ItemDetailsScreen(
     var showNotesSavedPopup by remember { mutableStateOf(false) }
     var notesDraft by remember(item.id, item.notes) { mutableStateOf(item.notes.orEmpty()) }
     var pendingAction by remember { mutableStateOf(PendingAction.NONE) }
+
+    val modalOpen =
+        showConfirmRetrievePopup ||
+        showConfirmDeletePopup ||
+        showRetrievedPopup ||
+        showDeletedPopup ||
+        showEditNotesDialog ||
+        showNotesSavedPopup
     
     val zoneName = when (val state = zoneState) {
         is Resource.Success -> {
@@ -197,9 +205,12 @@ fun ItemDetailsScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             IconButton(
+                                enabled = !modalOpen && pendingAction == PendingAction.NONE,
                                 onClick = {
-                                    notesDraft = item.notes.orEmpty()
-                                    showEditNotesDialog = true
+                                    if (!modalOpen && pendingAction == PendingAction.NONE) {
+                                        notesDraft = item.notes.orEmpty()
+                                        showEditNotesDialog = true
+                                    }
                                 }
                             ) {
                                 Icon(
@@ -222,8 +233,11 @@ fun ItemDetailsScreen(
 
                     // logs the retrieved event immediately.
                     Button(
+                        enabled = !modalOpen && pendingAction == PendingAction.NONE,
                         onClick = {
-                            showConfirmRetrievePopup = true
+                            if (!modalOpen && pendingAction == PendingAction.NONE) {
+                                showConfirmRetrievePopup = true
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -246,8 +260,11 @@ fun ItemDetailsScreen(
                     ) {
 
                         Button(
+                            enabled = !modalOpen && pendingAction == PendingAction.NONE,
                             onClick = {
-                                onEditClick(item)
+                                if (!modalOpen && pendingAction == PendingAction.NONE) {
+                                    onEditClick(item)
+                                }
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -272,8 +289,11 @@ fun ItemDetailsScreen(
                         }
 
                         Button(
+                            enabled = !modalOpen && pendingAction == PendingAction.NONE,
                             onClick = {
-                                showConfirmDeletePopup = true
+                                if (!modalOpen && pendingAction == PendingAction.NONE) {
+                                    showConfirmDeletePopup = true
+                                }
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -391,6 +411,7 @@ fun ItemDetailsScreen(
                                     )
                                 },
                                 modifier = Modifier.weight(1f).height(48.dp),
+                                enabled = pendingAction == PendingAction.NONE,
                                 shape = RoundedCornerShape(8.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = SpotrPrimary)
                             ) {
