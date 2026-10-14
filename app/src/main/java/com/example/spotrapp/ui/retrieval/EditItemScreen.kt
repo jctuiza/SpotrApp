@@ -1,5 +1,9 @@
 package com.example.spotrapp.ui.retrieval
 
+/**
+ * Lets users update an existing item's details, notes, and assigned zone, then saves the changes through the ViewModel.
+ */
+
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
