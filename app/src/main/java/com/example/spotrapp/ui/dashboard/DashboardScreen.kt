@@ -84,6 +84,7 @@ fun DashboardScreen(
     var showMoveDialog by remember { mutableStateOf(false) }
     var showBulkDeleteDialog by remember { mutableStateOf(false) }
     var pendingBulkAction by remember { mutableStateOf<String?>(null) }
+    var bulkActionStarted by remember { mutableStateOf(false) }
     var showRenameZoneDialog by remember { mutableStateOf(false) }
 
     val itemState by itemViewModel.itemState.collectAsStateWithLifecycle()
@@ -145,8 +146,11 @@ fun DashboardScreen(
 
     LaunchedEffect(itemActionState) {
         when (val action = itemActionState) {
+            is Resource.Loading -> {
+                if (pendingBulkAction != null) bulkActionStarted = true
+            }
             is Resource.Success -> {
-                if (pendingBulkAction != null) {
+                if (pendingBulkAction != null && bulkActionStarted) {
                     Toast.makeText(
                         context,
                         if (pendingBulkAction == "retrieve") "Selected items retrieved." else "Selected items deleted.",
@@ -154,13 +158,15 @@ fun DashboardScreen(
                     ).show()
                     selectedItemIds = emptySet()
                     pendingBulkAction = null
+                    bulkActionStarted = false
                     itemViewModel.clearActionState()
                 }
             }
             is Resource.Error -> {
-                if (pendingBulkAction != null) {
+                if (pendingBulkAction != null && bulkActionStarted) {
                     Toast.makeText(context, action.message, Toast.LENGTH_LONG).show()
                     pendingBulkAction = null
+                    bulkActionStarted = false
                     itemViewModel.clearActionState()
                 }
             }
