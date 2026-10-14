@@ -1,5 +1,9 @@
 package com.example.spotrapp.viewmodel
 
+/**
+ * Holds inventory screen state and launches item operations such as adding, editing, moving, retrieving, and deleting items.
+ */
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spotrapp.data.local.ItemEntity
