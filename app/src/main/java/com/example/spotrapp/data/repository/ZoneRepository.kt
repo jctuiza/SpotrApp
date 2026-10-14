@@ -1,5 +1,9 @@
 package com.example.spotrapp.data.repository
 
+/**
+ * Coordinates storage-zone data operations and exposes zone data to the rest of the app.
+ */
+
 import com.example.spotrapp.data.local.ItemDao
 import com.example.spotrapp.data.local.ZoneDao
 import com.example.spotrapp.data.local.ZoneEntity
