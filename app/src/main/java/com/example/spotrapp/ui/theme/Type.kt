@@ -1,8 +1,6 @@
 package com.example.spotrapp.ui.theme
 
-/**
- * Defines the typography styles used to keep text appearance consistent throughout the app.
- */
+// Defines the typography styles used to keep text appearance consistent throughout the app.
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
