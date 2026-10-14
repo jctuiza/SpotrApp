@@ -1,8 +1,6 @@
 package com.example.spotrapp.navigation
 
-/**
- * Defines route identifiers used to navigate between SpotrApp screens consistently.
- */
+// Defines route identifiers used to navigate between SpotrApp screens consistently.
 
 object Routes {
 
