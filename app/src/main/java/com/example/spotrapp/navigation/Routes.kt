@@ -1,5 +1,9 @@
 package com.example.spotrapp.navigation
 
+/**
+ * Defines route identifiers used to navigate between SpotrApp screens consistently.
+ */
+
 object Routes {
 
     const val ONBOARDING = "onboarding"
