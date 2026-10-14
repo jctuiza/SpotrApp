@@ -1,5 +1,9 @@
 package com.example.spotrapp.ui.search
 
+/**
+ * Provides the voice-search interface and passes recognized speech back into the inventory search flow.
+ */
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
