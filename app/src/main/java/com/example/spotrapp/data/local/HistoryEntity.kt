@@ -1,5 +1,9 @@
 package com.example.spotrapp.data.local
 
+/**
+ * Represents one saved history event, including its action, optional item ID, title, and timestamp.
+ */
+
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
