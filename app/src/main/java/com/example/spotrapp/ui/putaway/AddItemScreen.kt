@@ -685,9 +685,7 @@ fun AddItemScreen(
 
                                         selectedZone = zone
 
-                                            }
-                    
-                    if (zoneError != null) {
+                                        if (zoneError != null) {
                                             zoneError = null
                                         }
                                     }
@@ -777,6 +775,9 @@ fun AddItemScreen(
                                 color = SpotrPrimary,
                                 fontWeight = FontWeight.Bold
                             )
+                        }
+                    }
+
                         }
                     }
 
