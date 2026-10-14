@@ -1,8 +1,6 @@
 package com.example.spotrapp.ui.dashboard
 
-/**
- * Displays the Dashboard's empty-state message and guidance when there are no items to show.
- */
+// Displays the Dashboard's empty-state message and guidance when there are no items to show.
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
