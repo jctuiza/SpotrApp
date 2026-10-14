@@ -1,8 +1,6 @@
 package com.example.spotrapp.data.repository
 
-/**
- * Wraps asynchronous operation results as loading, success, or error states for the UI to display.
- */
+// Wraps asynchronous operation results as loading, success, or error states for the UI to display.
 
 // wrapper for async ops
 sealed class Resource<T> {
