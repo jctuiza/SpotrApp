@@ -1,8 +1,6 @@
 package com.example.spotrapp.ui.retrieval
 
-/**
- * Shows the selected item's full details and handles edit, retrieve, delete, and notes actions with confirmation dialogs.
- */
+// Shows the selected item's full details and handles edit, retrieve, delete, and notes actions with confirmation dialogs.
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
