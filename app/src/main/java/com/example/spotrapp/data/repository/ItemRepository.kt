@@ -1,8 +1,6 @@
 package com.example.spotrapp.data.repository
 
-/**
- * Centralizes inventory operations and their validation, including duplicate checks and history logging for item changes.
- */
+// Centralizes inventory operations and their validation, including duplicate checks and history logging for item changes.
 
 import com.example.spotrapp.data.local.HistoryAction
 import com.example.spotrapp.data.local.ItemDao
