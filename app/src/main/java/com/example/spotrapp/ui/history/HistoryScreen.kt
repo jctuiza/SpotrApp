@@ -1,8 +1,6 @@
 package com.example.spotrapp.ui.history
 
-/**
- * Displays the activity log and routes eligible history entries to the related item details screen.
- */
+// Displays the activity log and routes eligible history entries to the related item details screen.
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
